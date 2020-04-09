@@ -31,6 +31,11 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
     #region CustomMethods
     private void GetCurrentRoomPlayers()
     {
+        if (!PhotonNetwork.IsConnected)
+            return;
+        if (PhotonNetwork.CurrentRoom == null || PhotonNetwork.CurrentRoom.Players == null)
+            return;
+
         foreach(KeyValuePair<int, Player> playerInfo in PhotonNetwork.CurrentRoom.Players)
         {
             AddPlayerListing(playerInfo.Value);
@@ -53,6 +58,16 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
                 element.SetPlayerInfo(player);
                 listingElements.Add(element);
             }
+        }
+    }
+
+    public void OnClick_StartGame()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = false; //Not everyone can join
+            PhotonNetwork.CurrentRoom.IsVisible = false; //Not everyone can see it in the room list
+            PhotonNetwork.LoadLevel(1);
         }
     }
     #endregion

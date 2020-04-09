@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using ExitGames.Client.Photon;
 
 /// <summary>
 /// Helps with changing the values of a player listing element
 /// </summary>
-public class PlayerListingElement : MonoBehaviour
+public class PlayerListingElement : MonoBehaviourPunCallbacks
 {
     #region Public Fields
     [Tooltip("The text of the PlayerListing Element")]
@@ -18,9 +19,34 @@ public class PlayerListingElement : MonoBehaviour
     public Player Player { get; private set; }
     #endregion
 
+    #region Custom Methods
     public void SetPlayerInfo(Player player)
     {
         Player = player;
-        text.text = player.NickName;
+
+        SetPlayerText(player);
     }
+
+    private void SetPlayerText(Player player)
+    {
+        int result = -1;
+        if (player.CustomProperties.ContainsKey("RandomNumber"))
+            result = (int)player.CustomProperties["RandomNumber"];
+
+        text.text = result.ToString() + ", " + player.NickName;
+    }
+    #endregion
+
+    #region Photon Callbacks
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        if(targetPlayer != null && targetPlayer == Player)
+        {
+            if (changedProps.ContainsKey("RandomNumber"))
+            {
+                SetPlayerText(targetPlayer);
+            }
+        }
+    }
+    #endregion
 }
