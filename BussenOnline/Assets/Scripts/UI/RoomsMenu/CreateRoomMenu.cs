@@ -5,10 +5,17 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class CreateRoom : MonoBehaviourPunCallbacks
+public class CreateRoomMenu : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     private Text roomName;
+
+    private RoomsCanvases roomsCanvases;
+
+    public void FirstInitialize(RoomsCanvases canvases)
+    {
+        roomsCanvases = canvases;
+    }
 
     public void OnClick_CreateRoom()
     {
@@ -26,14 +33,17 @@ public class CreateRoom : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinOrCreateRoom(roomName.text, options, TypedLobby.Default);
     }
 
+    #region Pun Callbacks
     public override void OnCreatedRoom()
     {
         Debug.Log("Created room succesfully.", this);
+
+        roomsCanvases.CurrentRoomCanvas.Show();
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
         Debug.Log("Room creation failed " + message, this);
-
     }
+    #endregion
 }
