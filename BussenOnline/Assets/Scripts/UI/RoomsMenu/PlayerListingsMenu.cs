@@ -18,12 +18,13 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
 
     #region Private Fields
     private List<PlayerListingElement> listingElements = new List<PlayerListingElement>();
+    private RoomsCanvases roomsCanvases;
     #endregion
 
-    #region MonoBehaviour Callbacks
-    private void Awake()
+    #region First Initialize
+    public  void FirstInitialize(RoomsCanvases canvases)
     {
-        GetCurrentRoomPlayers();
+        roomsCanvases = canvases;
     }
     #endregion
 
@@ -38,17 +39,42 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
 
     private void AddPlayerListing(Player player)
     {
-        PlayerListingElement element = Instantiate(playerListing, content);
-
-        if (element != null)
+        int index = listingElements.FindIndex(x => x.Player == player);
+        if(index != -1)
         {
-            element.SetPlayerInfo(player);
-            listingElements.Add(element);
+            listingElements[index].SetPlayerInfo(player);
+        }
+        else
+        {
+            PlayerListingElement element = Instantiate(playerListing, content);
+
+            if (element != null)
+            {
+                element.SetPlayerInfo(player);
+                listingElements.Add(element);
+            }
         }
     }
     #endregion
 
     #region Photon Callbacks
+    public override void OnEnable()
+    {
+        base.OnEnable();
+
+        GetCurrentRoomPlayers();
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+
+        for (int i = 0; i < listingElements.Count; i++)
+            Destroy(listingElements[i].gameObject);
+
+        listingElements.Clear();
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         AddPlayerListing(newPlayer);

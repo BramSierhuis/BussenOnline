@@ -103,7 +103,13 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         if (isConnecting)
         {
-            PhotonNetwork.JoinLobby();
+            if (!PhotonNetwork.InLobby)
+            {
+                Debug.Log("Trying to join lobby: " + PhotonNetwork.JoinLobby());
+
+                Debug.LogError(PhotonNetwork.InLobby);
+            }
+                
 
             if (joinRandom)
             {
@@ -113,6 +119,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             else
             {
                 PhotonNetwork.LoadLevel("RoomLobby");
+                Debug.LogError(PhotonNetwork.InLobby);
                 isConnecting = false;
             }
         }
@@ -147,6 +154,16 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             PhotonNetwork.LoadLevel("GameScene");
         }
+    }
+
+    public override void OnJoinedLobby()
+    {
+        Debug.Log("You joined a lobby");
+    }
+
+    public override void OnLeftLobby()
+    {
+        Debug.Log("You left a lobby");
     }
     #endregion
 }

@@ -30,7 +30,7 @@ public class CreateRoomMenu : MonoBehaviourPunCallbacks
         options.MaxPlayers = 6;
 
         if(roomName.text != string.Empty)
-            PhotonNetwork.JoinOrCreateRoom(roomName.text, options, TypedLobby.Default);
+            PhotonNetwork.JoinOrCreateRoom(roomName.text, options, null);
     }
 
     #region Pun Callbacks

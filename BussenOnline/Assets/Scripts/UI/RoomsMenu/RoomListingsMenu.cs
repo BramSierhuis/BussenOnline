@@ -39,18 +39,25 @@ public class RoomListingsMenu : MonoBehaviourPunCallbacks
 
                 if(index != -1) //-1 is returned when not found
                 {
-                    Destroy(listingElements[index].gameObject);
-                    listingElements.RemoveAt(index);
+                    if(listingElements[index].gameObject != null)
+                    {
+                        Destroy(listingElements[index].gameObject);
+                        listingElements.RemoveAt(index);
+                    }
                 }
             }
             else //Room gets added to list
             {
-                RoomListingElement element = Instantiate(roomListing, content);
-
-                if (element != null)
+                int index = listingElements.FindIndex(x => x.RoomInfo.Name == roomInfo.Name);
+                if(index == -1)
                 {
-                    element.SetRoomInfo(roomInfo);
-                    listingElements.Add(element);
+                    RoomListingElement element = Instantiate(roomListing, content);
+
+                    if (element != null)
+                    {
+                        element.SetRoomInfo(roomInfo);
+                        listingElements.Add(element);
+                    }
                 }
             }
         }
