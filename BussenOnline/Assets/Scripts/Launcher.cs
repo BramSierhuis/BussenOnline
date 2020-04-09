@@ -23,6 +23,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     #region Private Vars
     string gameVersion = "1";
+    bool joinRandom;
     bool isConnecting;
     #endregion
 
@@ -53,6 +54,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     /// </summary>
     public void Connect()
     {
+        joinRandom = true;
         Debug.Log("The start game button has been pressed");
 
         progressLabel.SetActive(true);
@@ -61,6 +63,25 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsConnected)
         {
             PhotonNetwork.JoinRandomRoom();
+        }
+        else
+        {
+            isConnecting = PhotonNetwork.ConnectUsingSettings();
+            PhotonNetwork.GameVersion = gameVersion;
+        }
+    }
+
+    public void OpenRoomsMenu()
+    {
+        joinRandom = false;
+        Debug.Log("The rooms menu button has been pressed");
+
+        progressLabel.SetActive(true);
+        controlPanel.SetActive(false);
+
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.LoadLevel("RoomLobby");
         }
         else
         {
@@ -80,8 +101,16 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         if (isConnecting)
         {
-            PhotonNetwork.JoinRandomRoom();
-            isConnecting = false;
+            if (joinRandom)
+            {
+                PhotonNetwork.JoinRandomRoom();
+                isConnecting = false;
+            }
+            else
+            {
+                PhotonNetwork.LoadLevel("RoomLobby");
+                isConnecting = false;
+            }
         }
     }
 

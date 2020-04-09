@@ -10,6 +10,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-
+        PhotonNetwork.InstantiateSceneObject("Card", new Vector3(0, 2, 0), Quaternion.identity);
     }
 }
