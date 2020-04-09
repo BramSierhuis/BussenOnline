@@ -20,15 +20,38 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
     private List<PlayerListingElement> listingElements = new List<PlayerListingElement>();
     #endregion
 
-    public override void OnPlayerEnteredRoom(Player newPlayer)
+    #region MonoBehaviour Callbacks
+    private void Awake()
+    {
+        GetCurrentRoomPlayers();
+    }
+    #endregion
+
+    #region CustomMethods
+    private void GetCurrentRoomPlayers()
+    {
+        foreach(KeyValuePair<int, Player> playerInfo in PhotonNetwork.CurrentRoom.Players)
+        {
+            AddPlayerListing(playerInfo.Value);
+        }
+    }
+
+    private void AddPlayerListing(Player player)
     {
         PlayerListingElement element = Instantiate(playerListing, content);
 
         if (element != null)
         {
-            element.SetPlayerInfo(newPlayer);
+            element.SetPlayerInfo(player);
             listingElements.Add(element);
         }
+    }
+    #endregion
+
+    #region Photon Callbacks
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        AddPlayerListing(newPlayer);
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -41,4 +64,5 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
             listingElements.RemoveAt(index);
         }
     }
+    #endregion
 }

@@ -32,6 +32,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.AutomaticallySyncScene = true; //Make sure the same scene is loaded
         PhotonNetwork.LogLevel = Loglevel;
+
+        DontDestroyOnLoad(this);
     }
 
     void Start()
@@ -139,7 +141,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         Debug.Log("Launcher: OnJoinedRoom() called by PUN. Now this client is in a room with nickname: " + PhotonNetwork.NickName);
 
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 1 && joinRandom)
         {
             Debug.Log("We load the GameScene");
 

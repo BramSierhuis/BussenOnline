@@ -18,8 +18,17 @@ public class RoomListingsMenu : MonoBehaviourPunCallbacks
 
     #region Private Fields
     private List<RoomListingElement> listingElements = new List<RoomListingElement>();
+    private RoomsCanvases roomsCanvases;
     #endregion
 
+    #region First Initialization
+    public void FirstInitialize(RoomsCanvases canvases)
+    {
+        roomsCanvases = canvases;
+    }
+    #endregion
+
+    #region Photon Callbacks
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         foreach (RoomInfo roomInfo in roomList)
@@ -46,4 +55,12 @@ public class RoomListingsMenu : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    public override void OnJoinedRoom() 
+    {
+        roomsCanvases.CurrentRoomCanvas.Show();
+        content.DestroyChildren();
+        listingElements.Clear();
+    }
+    #endregion
 }

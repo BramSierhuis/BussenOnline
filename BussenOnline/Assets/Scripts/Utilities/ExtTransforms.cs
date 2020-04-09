@@ -7,9 +7,9 @@ public static class Transforms
         foreach(Transform child in t)
         {
             if (destroyImmediately)
-                MonoBehaviour.DestroyImmediate(child);
+                MonoBehaviour.DestroyImmediate(child.gameObject);
             else
-                MonoBehaviour.Destroy(child);
+                MonoBehaviour.Destroy(child.gameObject);
         }
     }
 }

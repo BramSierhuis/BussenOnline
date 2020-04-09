@@ -5,6 +5,8 @@ using UnityEngine;
 public class CreateOrJoinRoomCanvas : MonoBehaviour
 {
     [SerializeField]
+    private RoomListingsMenu roomListingsMenu;
+    [SerializeField]
     private CreateRoomMenu createRoomMenu;
 
     private RoomsCanvases roomsCanvases;
@@ -13,5 +15,6 @@ public class CreateOrJoinRoomCanvas : MonoBehaviour
     {
         roomsCanvases = canvases;
         createRoomMenu.FirstInitialize(canvases);
+        roomListingsMenu.FirstInitialize(canvases);
     }
 }
