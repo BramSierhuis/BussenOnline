@@ -14,9 +14,9 @@ public class PlayerListingElement : MonoBehaviour
     [Tooltip("The text of the PlayerListing Element")]
     [SerializeField]
     private Text text;
-    #endregion
 
-    public Player Player {get; private set;}
+    public Player Player { get; private set; }
+    #endregion
 
     public void SetPlayerInfo(Player player)
     {

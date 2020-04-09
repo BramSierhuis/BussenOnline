@@ -14,9 +14,8 @@ public class RoomListingElement : MonoBehaviour
     [Tooltip("The text of the RoomListing Element")]
     [SerializeField]
     private Text text;
+    public RoomInfo RoomInfo { get; private set; }
     #endregion
-
-    public RoomInfo RoomInfo {get; private set;}
 
     public void SetRoomInfo(RoomInfo roomInfo)
     {

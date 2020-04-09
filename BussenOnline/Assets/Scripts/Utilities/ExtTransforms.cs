@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Extension for the Transforms class, a method that deletes all children
+/// </summary>
 public static class Transforms
 {
     public static void DestroyChildren(this Transform t, bool destroyImmediately = false)
