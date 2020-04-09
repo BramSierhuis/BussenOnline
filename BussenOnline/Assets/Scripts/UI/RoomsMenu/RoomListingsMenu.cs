@@ -18,7 +18,21 @@ public class RoomListingsMenu : MonoBehaviourPunCallbacks
 
     #region Private Fields
     private List<RoomListingElement> listingElements = new List<RoomListingElement>();
+    private RoomsCanvases roomsCanvases;
     #endregion
+
+    #region Custom Methods
+    public void FirstInitialize(RoomsCanvases canvases)
+    {
+        roomsCanvases = canvases;
+    }
+    #endregion
+
+    #region Photon Callbacks
+    public override void OnJoinedRoom()
+    {
+        roomsCanvases.CurrentRoomCanvas.Show();
+    }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
@@ -46,4 +60,5 @@ public class RoomListingsMenu : MonoBehaviourPunCallbacks
             }
         }
     }
+    #endregion  
 }
