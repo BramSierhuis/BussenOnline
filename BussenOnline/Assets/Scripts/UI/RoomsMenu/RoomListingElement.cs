@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// </summary>
 public class RoomListingElement : MonoBehaviour
 {
-    #region References
+    #region Public Fields
     [Tooltip("The text of the RoomListing Element")]
     [SerializeField]
     private Text text;
