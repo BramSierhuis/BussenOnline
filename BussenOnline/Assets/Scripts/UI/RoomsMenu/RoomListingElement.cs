@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
 
 /// <summary>
 /// Helps with changing the values of a room listing element
@@ -22,10 +21,5 @@ public class RoomListingElement : MonoBehaviour
     {
         RoomInfo = roomInfo;
         text.text = roomInfo.MaxPlayers + ", " + roomInfo.Name;
-    }
-
-    public void OnClick_Button()
-    {
-        PhotonNetwork.JoinRoom(RoomInfo.Name);
     }
 }
