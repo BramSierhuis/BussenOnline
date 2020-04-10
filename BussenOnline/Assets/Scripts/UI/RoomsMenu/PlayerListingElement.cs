@@ -17,6 +17,7 @@ public class PlayerListingElement : MonoBehaviourPunCallbacks
     private Text text;
 
     public Player Player { get; private set; }
+    public bool ready = false;
     #endregion
 
     #region Custom Methods
