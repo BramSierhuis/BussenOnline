@@ -18,6 +18,17 @@ public class PlayerListingElement : MonoBehaviourPunCallbacks
 
     public Player Player { get; private set; }
     public bool ready = false;
+    public RawImage background { get; private set; }
+    #endregion
+
+    #region Private Fields
+    #endregion
+
+    #region Monobehaviour Callbacks
+    private void Awake()
+    {
+        background = GetComponent<RawImage>();
+    }
     #endregion
 
     #region Custom Methods
@@ -35,6 +46,11 @@ public class PlayerListingElement : MonoBehaviourPunCallbacks
             result = (int)player.CustomProperties["RandomNumber"];
 
         text.text = result.ToString() + ", " + player.NickName;
+    }
+
+    public void SetBackgroundColor(Color color)
+    {
+        background.color = color;
     }
     #endregion
 
