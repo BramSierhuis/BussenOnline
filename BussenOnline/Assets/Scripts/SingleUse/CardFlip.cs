@@ -4,39 +4,46 @@ using UnityEngine;
 
 public class CardFlip : MonoBehaviour
 {
-    public float speed = 1f;
-    public Transform from; //Y rotation has to be 180
+    public float speed = 5f;
     public Transform to; //Y rotation has to be 0
     public Sprite cardFront; //The card has to be instantiated with its back on top
 
     private SpriteRenderer sr;
-    private float startTime;
     private float journeyLength;
+    private float time;
+    private float lerpValue;
+    private Transform from;
+    private bool frontShown = false;
 
     private void Awake()
     {
+        from = transform; //From y rotation has to be 180
+        from.eulerAngles = -transform.eulerAngles;
+
         sr = GetComponent<SpriteRenderer>();
     }
 
     void Start()
     {
-        startTime = Time.time;
         journeyLength = Vector3.Distance(from.position, to.position);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(transform.position != to.position)
+        if (transform.position != to.position)
         {
-            float distCovered = (Time.time - startTime) * speed;
-            float fractionOfJourney = distCovered / journeyLength; //How far it is on its way (1/10th, 1/2, etc)
+            time += Time.deltaTime;
+            lerpValue = time / (1 / (speed/journeyLength));
 
-            if (distCovered > journeyLength / 2)
+            if (transform.eulerAngles.y < 90 && !frontShown)
+            {
                 sr.sprite = cardFront;
+                frontShown = true;
+            }
 
-            transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, Mathf.SmoothStep(from.rotation.y, to.rotation.y, fractionOfJourney));
-            transform.position = Vector3.Lerp(from.position, to.position, Mathf.SmoothStep(0, journeyLength / speed, fractionOfJourney));
+            transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, Mathf.SmoothStep(0, 1, lerpValue));
+            transform.position = Vector3.Lerp(from.position, to.position, Mathf.SmoothStep(0, 1, lerpValue));
         }
     }
 }
