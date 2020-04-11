@@ -291,7 +291,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &226479052
 RectTransform:
   m_ObjectHideFlags: 0
@@ -305,12 +305,12 @@ RectTransform:
   m_Children:
   - {fileID: 1751840350}
   m_Father: {fileID: 825581915}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -203.7, y: 309}
-  m_SizeDelta: {x: 380.8, y: 74}
+  m_AnchoredPosition: {x: -309.7, y: 309}
+  m_SizeDelta: {x: 168.8, y: 74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &226479053
 MonoBehaviour:
@@ -379,7 +379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.5243551, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -592,7 +592,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &578508010
 RectTransform:
   m_ObjectHideFlags: 0
@@ -606,12 +606,12 @@ RectTransform:
   m_Children:
   - {fileID: 684330186}
   m_Father: {fileID: 825581915}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -204.6, y: 309}
-  m_SizeDelta: {x: 380.4, y: 74}
+  m_AnchoredPosition: {x: -116.6, y: 309}
+  m_SizeDelta: {x: 204.5, y: 74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &578508011
 MonoBehaviour:
@@ -680,7 +680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.5575017, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1058,8 +1058,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 578508010}
   - {fileID: 226479052}
+  - {fileID: 578508010}
   - {fileID: 1840087653}
   m_Father: {fileID: 1466429245}
   m_RootOrder: 2
@@ -1080,8 +1080,6 @@ MonoBehaviour:
   playerListing: {fileID: 6954252487029450640, guid: 6e8d999be9885c54cb25072ec291ca4d,
     type: 3}
   readyUpText: {fileID: 684330187}
-  startButton: {fileID: 226479051}
-  readyButton: {fileID: 578508009}
 --- !u!114 &825581917
 MonoBehaviour:
   m_ObjectHideFlags: 0
