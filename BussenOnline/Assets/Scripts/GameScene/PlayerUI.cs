@@ -1,0 +1,61 @@
+﻿using UnityEngine;
+using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
+
+public class PlayerUI : MonoBehaviourPun, IPunObservable
+{
+    [SerializeField]
+    private Vector3 canvasOffset;
+
+    [SerializeField]
+    private Player player;
+    public Player Player { 
+        get { return player; } 
+        set
+        {
+            player = value;
+            nicknameText.text = value.NickName;
+        }
+    }
+
+    [SerializeField]
+    private int totalDrinks = 0;
+    public int TotalDrinks { 
+        get { return totalDrinks; }
+        set 
+        {
+            totalDrinks = value;
+            totalDrinksText.text = value.ToString();
+        }
+    }
+
+    [SerializeField]
+    private Transform handPosition;
+    public Transform HandPosition { get { return handPosition; } }
+
+    [SerializeField]
+    private Text nicknameText;
+
+    [SerializeField]
+    private Text totalDrinksText;
+
+    [SerializeField]
+    private Canvas canvas;
+
+    private void Start()
+    {
+        if (gameObject.transform.position.x > 0) //If we are on the right side
+            canvas.transform.position += canvasOffset;
+
+        totalDrinksText.text = TotalDrinks.ToString();
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+            stream.SendNext(Player);
+        else if (stream.IsReading)
+            Player = (Player) stream.ReceiveNext();
+    }
+}
