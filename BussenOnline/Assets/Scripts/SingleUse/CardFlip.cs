@@ -17,6 +17,10 @@ public class CardFlip : MonoBehaviour
 
     void Start()
     {
+    }
+
+    public void OnClick_Button()
+    {
         StartCoroutine(MoveWithoutRotation(toRef));
     }
 

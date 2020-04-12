@@ -33,6 +33,7 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
     private List<PlayerListingElement> listingElements = new List<PlayerListingElement>();
     private RoomsCanvases roomsCanvases;
     private bool ready = false;
+    private RawImage startButtonBackground;
     private bool IsEveryoneReady
     {
         get
@@ -55,6 +56,13 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
     public  void FirstInitialize(RoomsCanvases canvases)
     {
         roomsCanvases = canvases;
+    }
+    #endregion
+
+    #region Monobehaviour Callbacks
+    private void Awake()
+    {
+        startButtonBackground = startButton.GetComponent<RawImage>();
     }
     #endregion
 
@@ -166,9 +174,9 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
                 listingElements[index].background.color = Color.red;
 
             if (IsEveryoneReady)
-                startButton.GetComponent<RawImage>().color = Color.green;
+                startButtonBackground.color = Color.green;
             else
-                startButton.GetComponent<RawImage>().color = Color.red;
+                startButtonBackground.color = Color.red;
         }
     }
     #endregion
@@ -187,7 +195,10 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
             startButton.SetActive(true);
             readyButton.SetActive(false);
 
-            startButton.GetComponent<RawImage>().color = Color.red;
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+                startButtonBackground.color = Color.green;
+            else
+                startButtonBackground.color = Color.red;
         }
         else
         {
@@ -216,6 +227,9 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         AddPlayerListing(newPlayer);
+
+        //We are no longer the only player, so we cant start the game yet
+        startButtonBackground.color = Color.red;
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -226,6 +240,12 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
         {
             Destroy(listingElements[index].gameObject);
             listingElements.RemoveAt(index);
+        }
+
+        if(PhotonNetwork.CurrentRoom.PlayerCount == 1 && PhotonNetwork.LocalPlayer.IsMasterClient)
+        {
+            //We are the only person in the room, so set the button to ready
+            startButtonBackground.color = Color.green;
         }
     }
     #endregion
