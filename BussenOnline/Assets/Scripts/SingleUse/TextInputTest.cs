@@ -40,7 +40,9 @@ public class TextInputTest : MonoBehaviourPunCallbacks, IPunObservable
             pos = transform.position;
             pos.x += 2;
 
-            gameObject.GetComponent<Text>().text = "Test";
+            ExitGames.Client.Photon.Hashtable customRoomProperties = PhotonNetwork.CurrentRoom.CustomProperties;
+
+            gameObject.GetComponent<Text>().text = customRoomProperties["current round"].ToString();
 
             transform.position = pos;
         }

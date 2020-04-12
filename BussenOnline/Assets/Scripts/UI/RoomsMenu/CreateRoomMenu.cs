@@ -27,7 +27,8 @@ public class CreateRoomMenu : MonoBehaviourPunCallbacks
 
         RoomOptions options = new RoomOptions();
         options.BroadcastPropsChangeToAll = true;
-        options.MaxPlayers = 6;
+        options.MaxPlayers = MasterManager.GameSettings.MaximumPlayers;
+        options.CustomRoomProperties = MasterManager.GameSettings.CustomRoomProperties;
 
         if(roomName.text != string.Empty)
             PhotonNetwork.JoinOrCreateRoom(roomName.text, options, null);
