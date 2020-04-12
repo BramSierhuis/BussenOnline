@@ -20,25 +20,11 @@ public class PlayerUI : MonoBehaviourPun, IPunObservable
     }
 
     [SerializeField]
-    private int totalDrinks = 0;
-    public int TotalDrinks { 
-        get { return totalDrinks; }
-        set 
-        {
-            totalDrinks = value;
-            totalDrinksText.text = value.ToString();
-        }
-    }
-
-    [SerializeField]
     private Transform handPosition;
     public Transform HandPosition { get { return handPosition; } }
 
     [SerializeField]
     private Text nicknameText;
-
-    [SerializeField]
-    private Text totalDrinksText;
 
     [SerializeField]
     private Canvas canvas;
@@ -47,8 +33,6 @@ public class PlayerUI : MonoBehaviourPun, IPunObservable
     {
         if (gameObject.transform.position.x > 0) //If we are on the right side
             canvas.transform.position += canvasOffset;
-
-        totalDrinksText.text = TotalDrinks.ToString();
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
