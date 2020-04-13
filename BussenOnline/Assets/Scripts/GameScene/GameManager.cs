@@ -4,8 +4,9 @@ using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 
-public class GameManager : MonoBehaviourPunCallbacks
+public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region Public Fields
     //Singleton
@@ -38,7 +39,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             activePlayer.MyTurn = true;
         }
     }
-    int activePlayerInt;
+    int activePlayerIndex;
     #endregion
 
     private void Awake()
@@ -47,6 +48,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if(!PhotonNetwork.IsConnected)
             return;
+
+        Debug.LogWarning(PhotonNetwork.LocalPlayer.UserId);
 
         if (PhotonNetwork.IsMasterClient)
         {
@@ -59,6 +62,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 playerUI.Player = playerKVP.Value;
                 playerManager.Player = playerKVP.Value;
+                playerManager.Index = id;
 
                 players.Add(playerManager);
 
@@ -70,25 +74,26 @@ public class GameManager : MonoBehaviourPunCallbacks
                 Destroy(spawnPositions[i].gameObject);
             }
         }
-
-        NextRound();
     }
 
     private void Start()
     {
+        StartCoroutine(ExecuteAfterTime(1));
     }
 
 
     public void NextMove()
     {
-        if (activePlayerInt + 1 == players.Count)
+        if (activePlayerIndex + 1 == players.Count)
         {
             NextRound();
         }
         else //If there is another player that hasn't been this round
         {
-            activePlayerInt++;
-            ActivePlayer = players[activePlayerInt];
+            ActivePlayer.MyTurn = false;
+
+            activePlayerIndex++;
+            ActivePlayer = players[activePlayerIndex];
         }
 
         statusText.text = "Speler: " + ActivePlayer.Player.NickName + " zijn beurd";
@@ -96,31 +101,36 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void NextRound()
     {
-        //In the first round there isn't an active player yet
-        if(ActivePlayer == null)
-        {
-            int i = players.FindIndex(x => x.Player == PhotonNetwork.LocalPlayer);
-            if (i != -1)
-            {
-                ActivePlayer = players[i]; //Set the active player to the local player
-            }
-            else
-            {
-                Debug.LogError("Not again");
-            }
+        Debug.LogWarning(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
 
-            statusText.text = "Speler: " + ActivePlayer.Player.NickName + " zijn beurd";
+        //In the first round there isn't an active player yet
+        if (ActivePlayer == null)
+        {
+                int i = players.FindIndex(x => x.Player == PhotonNetwork.MasterClient);
+                if (i != -1)
+                {
+                    ActivePlayer = players[i]; //Set the active player to the local player
+                }
+
+                statusText.text = "Speler: " + ActivePlayer.Player.NickName + " zijn beurd";
         }
         else //If this isn't the first round
         {
             ActivePlayer = players[0];
-            activePlayerInt = 0;
+            activePlayerIndex = 0;
 
             Enums.GameState currentRound = (Enums.GameState)(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
-            PhotonNetwork.CurrentRoom.CustomProperties["current round"] = currentRound + 1;
+            currentRound += 1;
+            PhotonNetwork.CurrentRoom.CustomProperties["current round"] = currentRound;
+
+            Debug.LogWarning(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
+
 
             switch ((int)currentRound)
             {
+                case 0: //Init
+                    round1Panel.SetActive(false);
+                    break;
                 case 1: //RedBlack
                     round1Panel.SetActive(true);
                     break;
@@ -159,10 +169,48 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void OnClick_TakeColorCard(string color)
     {
+        ActivePlayer = players[activePlayerIndex];
+
         if (activePlayer.Player == PhotonNetwork.LocalPlayer)
         {
             Debug.Log(color);
             NextMove();
+        }
+        else
+        {
+            Debug.Log("Active player: " + activePlayer.Player.NickName);
+            Debug.Log("Local player: " + PhotonNetwork.LocalPlayer.NickName);
+        }
+    }
+
+    IEnumerator ExecuteAfterTime(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        List<PlayerManager> tempPlayers = new List<PlayerManager>();
+
+        foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            tempPlayers.Add(gameObject.GetComponent<PlayerManager>());
+            players.Add(gameObject.GetComponent<PlayerManager>()); //is just temporary placeholder
+        }
+
+        foreach (PlayerManager player in tempPlayers)
+        {
+            players[player.Index] = player;
+        }
+
+        NextRound();
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(activePlayerIndex);
+        }else if (stream.IsReading)
+        {
+            activePlayerIndex = (int)stream.ReceiveNext();
         }
     }
 }

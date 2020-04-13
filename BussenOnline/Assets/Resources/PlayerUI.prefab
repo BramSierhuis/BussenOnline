@@ -455,6 +455,7 @@ GameObject:
   - component: {fileID: 5461108284071783149}
   - component: {fileID: 5461108284071783148}
   - component: {fileID: 5282442563353298673}
+  - component: {fileID: -7848283525247487672}
   m_Layer: 0
   m_Name: PlayerUI
   m_TagString: Player
@@ -515,6 +516,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 5461108284071783149}
   - {fileID: 5282442563353298673}
+  - {fileID: -7848283525247487672}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -531,5 +533,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MyTurn: 0
+  Index: 0
   totalDrinks: 0
   totalDrinksText: {fileID: 5461108283099592970}
+--- !u!114 &-7848283525247487672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5461108284071783147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0

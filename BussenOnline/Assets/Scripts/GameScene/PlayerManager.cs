@@ -9,6 +9,7 @@ public class PlayerManager : MonoBehaviour, IPunObservable
 {
     public Player Player;
     public bool MyTurn = false;
+    public int Index;
 
     [SerializeField]
     private int totalDrinks = 0;
@@ -37,12 +38,14 @@ public class PlayerManager : MonoBehaviour, IPunObservable
             stream.SendNext(Player);
             stream.SendNext(MyTurn);
             stream.SendNext(TotalDrinks);
+            stream.SendNext(Index);
         }
         else if (stream.IsReading) 
         {
             Player = (Player)stream.ReceiveNext();
             MyTurn = (bool)stream.ReceiveNext();
             TotalDrinks = (int)stream.ReceiveNext();
+            Index = (int)stream.ReceiveNext();
         }
     }
 }
