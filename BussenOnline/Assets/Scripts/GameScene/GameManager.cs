@@ -85,9 +85,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void NextMove()
     {
         if (activePlayerIndex + 1 == players.Count)
-        {
             NextRound();
-        }
         else //If there is another player that hasn't been this round
         {
             ActivePlayer.MyTurn = false;
@@ -101,69 +99,27 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void NextRound()
     {
-        Debug.LogWarning(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
-
         //In the first round there isn't an active player yet
         if (ActivePlayer == null)
         {
                 int i = players.FindIndex(x => x.Player == PhotonNetwork.MasterClient);
                 if (i != -1)
-                {
                     ActivePlayer = players[i]; //Set the active player to the local player
-                }
 
                 statusText.text = "Speler: " + ActivePlayer.Player.NickName + " zijn beurd";
         }
         else //If this isn't the first round
         {
+            ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
+
             ActivePlayer = players[0];
             activePlayerIndex = 0;
 
             Enums.GameState currentRound = (Enums.GameState)(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
             currentRound += 1;
-            PhotonNetwork.CurrentRoom.CustomProperties["current round"] = currentRound;
 
-            Debug.LogWarning(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
-
-
-            switch ((int)currentRound)
-            {
-                case 0: //Init
-                    round1Panel.SetActive(false);
-                    break;
-                case 1: //RedBlack
-                    round1Panel.SetActive(true);
-                    break;
-                case 2: //HigherLower
-                    round1Panel.SetActive(false);
-                    round2Panel.SetActive(true);
-                    break;
-                case 3: //InsideOut
-                    round2Panel.SetActive(false);
-                    round3Panel.SetActive(true);
-                    break;
-                case 4: //Disco
-                    round3Panel.SetActive(false);
-                    round4Panel.SetActive(true);
-                    break;
-                case 5: //Pyramid
-                    round4Panel.SetActive(false);
-                    winnerPanel.SetActive(true);
-
-                    int min = 9999;
-                    PlayerManager winner = null;
-                    foreach (PlayerManager player in players)
-                    {
-                        if (player.TotalDrinks < min)
-                        {
-                            min = player.TotalDrinks;
-                            winner = player;
-                        }
-                    }
-
-                    winnerText.text = "The winner is: " + winner.name;
-                    break;
-            }
+            hash.Add("current round", currentRound);
+            PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         }
     }
 
@@ -211,6 +167,56 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }else if (stream.IsReading)
         {
             activePlayerIndex = (int)stream.ReceiveNext();
+        }
+    }
+
+    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    {
+        foreach(var key in propertiesThatChanged.Keys)
+        {
+            if(key.ToString() == "current round")
+            {
+                Debug.LogError("Round chaged: " + (int)PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
+
+                switch ((int)PhotonNetwork.CurrentRoom.CustomProperties["current round"])
+                {
+                    case 20: //Init
+                        round1Panel.SetActive(false);
+                        break;
+                    case 0: //RedBlack
+                        round1Panel.SetActive(true);
+                        break;
+                    case 1: //HigherLower
+                        round1Panel.SetActive(false);
+                        round2Panel.SetActive(true);
+                        break;
+                    case 3: //InsideOut
+                        round2Panel.SetActive(false);
+                        round3Panel.SetActive(true);
+                        break;
+                    case 4: //Disco
+                        round3Panel.SetActive(false);
+                        round4Panel.SetActive(true);
+                        break;
+                    case 5: //Pyramid
+                        round4Panel.SetActive(false);
+                        winnerPanel.SetActive(true);
+
+                        int min = 9999;
+                        PlayerManager winner = null;
+                        foreach (PlayerManager player in players)
+                        {
+                            if (player.TotalDrinks < min)
+                            {
+                                min = player.TotalDrinks;
+                                winner = player;
+                            }
+                        }
+
+                        winnerText.text = "The winner is: " + winner.name;
+                        break;
+                }
+            }
         }
     }
 }
