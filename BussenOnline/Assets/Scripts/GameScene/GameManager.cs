@@ -13,25 +13,33 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public static GameManager instance;
 
     [SerializeField]
+    [Tooltip("The positions that the player UI can spawn")]
     private Transform[] spawnPositions;
     #endregion
 
     #region References
-    public GameObject round1Panel;
-    public GameObject round2Panel;
-    public GameObject round3Panel;
-    public GameObject round4Panel;
-    public GameObject winnerPanel;
-    public GameObject statusPanel;
-    public Text statusText;
-    public Text winnerText;
+    [SerializeField]
+    private GameObject round1Panel;
+    [SerializeField]
+    private GameObject round2Panel;
+    [SerializeField]
+    private GameObject round3Panel;
+    [SerializeField]
+    private GameObject round4Panel;
+    [SerializeField]
+    private GameObject winnerPanel;
+    [SerializeField]
+    private Text statusText;
+    [SerializeField]
+    private Text winnerText;
     #endregion
 
     #region Private Fields
-    public List<PlayerManager> players = new List<PlayerManager>();
+    private List<PlayerManager> players = new List<PlayerManager>();
+    private int activePlayerIndex;
+    private PlayerManager activePlayer;
 
-    PlayerManager activePlayer;
-    PlayerManager ActivePlayer { 
+    private PlayerManager ActivePlayer { 
         get { return activePlayer; }
         set 
         { 
@@ -39,17 +47,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             activePlayer.MyTurn = true;
         }
     }
-    int activePlayerIndex;
     #endregion
 
+    #region MonoBehaviour Callbacks
     private void Awake()
     {
-        instance = this;
+        instance = this; //Singleton assignment
 
         if(!PhotonNetwork.IsConnected)
             return;
-
-        Debug.LogWarning(PhotonNetwork.LocalPlayer.UserId);
 
         if (PhotonNetwork.IsMasterClient)
         {
@@ -68,19 +74,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 id++;
             }
+        }
 
-            for(int i = id; i < spawnPositions.Length; i++)
-            {
-                Destroy(spawnPositions[i].gameObject);
-            }
+        foreach (Transform spawnPoint in spawnPositions)
+        {
+            Destroy(spawnPoint.gameObject);
         }
     }
 
     private void Start()
     {
-        StartCoroutine(ExecuteAfterTime(1));
+        StartCoroutine(CreateLocalPlayerList(1));
     }
+    #endregion
 
+    #region Custom Methods
     public void NextMove()
     {
         if (activePlayerIndex + 1 == players.Count)
@@ -103,44 +111,29 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
                 int i = players.FindIndex(x => x.Player == PhotonNetwork.MasterClient);
                 if (i != -1)
-                    ActivePlayer = players[i]; //Set the active player to the local player
-
-            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
+                    ActivePlayer = players[i]; //Set the active player to the master client
         }
         else //If this isn't the first round
         {
-            ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
-
+            //Set the active player to the first player
             ActivePlayer = players[0];
             activePlayerIndex = 0;
 
-            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
-
+            //Get the current round
             Enums.GameState currentRound = (Enums.GameState)(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
             currentRound += 1;
 
+            //Increase the value of the round with 1. This will trigger OnRoomPropertiesUpdate
+            ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
             hash.Add("current round", currentRound);
             PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         }
+
+        //Update the text of whose turn it is
+        photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
     }
 
-    public void OnClick_TakeColorCard(string color)
-    {
-        ActivePlayer = players[activePlayerIndex];
-
-        if (activePlayer.Player == PhotonNetwork.LocalPlayer)
-        {
-            Debug.Log(color);
-            NextMove();
-        }
-        else
-        {
-            Debug.Log("Active player: " + activePlayer.Player.NickName);
-            Debug.Log("Local player: " + PhotonNetwork.LocalPlayer.NickName);
-        }
-    }
-
-    IEnumerator ExecuteAfterTime(float time)
+    IEnumerator CreateLocalPlayerList(float time)
     {
         yield return new WaitForSeconds(time);
 
@@ -159,7 +152,28 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         NextRound();
     }
+    #endregion
 
+    #region OnClicks
+    public void OnClick_TakeColorCard(string color)
+    {
+        //This properties also sets muTurn to true
+        ActivePlayer = players[activePlayerIndex];
+
+        if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
+        {
+            Debug.Log(color);
+            NextMove();
+        }
+        else
+        {
+            Debug.Log("Active player: " + ActivePlayer.Player.NickName);
+            Debug.Log("Local player: " + PhotonNetwork.LocalPlayer.NickName);
+        }
+    }
+    #endregion
+
+    #region Photon Callbacks
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -220,7 +234,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
-
+    #endregion
 
     #region RPC's
     [PunRPC]
