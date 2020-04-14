@@ -13,6 +13,8 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     public Sprite back;
     public float speed = 5f;
     public bool hasOwner;
+    public float cardsInHandOffset = 0.3f;
+    public float cardsZOffset = 0.1f;
 
     private Sprite front = null;
     private SpriteRenderer sr;
@@ -37,7 +39,14 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     {
         player.hand.Add(this);
 
-        StartCoroutine(MoveWithRotation(player.HandPosition));
+        Vector3 toPosition = player.HandPosition.position;
+        toPosition.x += player.hand.Count * cardsInHandOffset;
+        toPosition.z -= player.hand.Count * cardsZOffset;
+
+        Transform handPosition = player.HandPosition;
+        handPosition.position = toPosition;
+
+        StartCoroutine(MoveWithRotation(handPosition));
     }
 
     IEnumerator MoveWithRotation(Transform to)
