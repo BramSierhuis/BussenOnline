@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 
-public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
+public class GameManager : MonoBehaviourPunCallbacks
 {
     #region Public Fields
     //Singleton
@@ -46,7 +46,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         set 
         { 
             activePlayer = value;
-            activePlayer.MyTurn = true;
+
+            activePlayer.photonView.RequestOwnership();
         }
     }
     #endregion
@@ -97,21 +98,24 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #region Custom Methods
     public void NextMove()
     {
+        Debug.LogError("Next move called");
         if (activePlayerIndex + 1 == players.Count)
             NextRound();
         else //If there is another player that hasn't been this round
         {
-            ActivePlayer.MyTurn = false;
+            Debug.LogError("Setting player to false; " + ActivePlayer.Player.NickName);
 
-            activePlayerIndex++;
+            SetActivePlayerIndex(activePlayerIndex + 1);
             ActivePlayer = players[activePlayerIndex];
         }
 
-        photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
+        photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex + 1].Player);
     }
 
     private void NextRound()
     {
+        Debug.LogError("Next round called");
+
         //In the first round there isn't an active player yet
         if (ActivePlayer == null)
         {
@@ -123,7 +127,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             //Set the active player to the first player
             ActivePlayer = players[0];
-            activePlayerIndex = 0;
+
+            SetActivePlayerIndex(0);
 
             //Get the current round
             Enums.GameState currentRound = (Enums.GameState)(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
@@ -148,6 +153,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             if (playingCard.hasOwner)
                 playingCards.Remove(playingCard);
         }
+    }
+
+    private void SetActivePlayerIndex(int index)
+    {
+        ExitGames.Client.Photon.Hashtable activePlayerHash = new ExitGames.Client.Photon.Hashtable();
+        activePlayerHash.Add("active player index", index);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(activePlayerHash);
     }
 
     IEnumerator CreateLocalPlayerList(float time)
@@ -176,7 +188,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         //This properties also sets muTurn to true
         ActivePlayer = players[activePlayerIndex];
-
+        Debug.LogError(ActivePlayer.Player.NickName);
         if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
         {
             UpdateCardList();
@@ -191,24 +203,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            Debug.Log("Active player: " + ActivePlayer.Player.NickName);
-            Debug.Log("Local player: " + PhotonNetwork.LocalPlayer.NickName);
+            Debug.LogError("Active player: " + ActivePlayer.Player.NickName);
+            Debug.LogError("Local player: " + PhotonNetwork.LocalPlayer.NickName);
         }
     }
     #endregion
 
     #region Photon Callbacks
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(activePlayerIndex);
-        }else if (stream.IsReading)
-        {
-            activePlayerIndex = (int)stream.ReceiveNext();
-        }
-    }
-
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
         foreach(var key in propertiesThatChanged.Keys)
@@ -255,6 +256,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                         winnerText.text = "The winner is: " + winner.name;
                         break;
                 }
+            }
+            if(key.ToString() == "active player index")
+            {
+                activePlayerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["active player index"];
             }
         }
     }

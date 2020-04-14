@@ -512,7 +512,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   ObservedComponents:
   - {fileID: 5461108284071783149}
   - {fileID: 5282442563353298673}
@@ -532,7 +532,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a98180f360bed843b778ca0b2d09e2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MyTurn: 0
   Index: 0
   hand: []
   totalDrinks: 0

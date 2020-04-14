@@ -5,10 +5,9 @@ using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 
-public class PlayerManager : MonoBehaviour, IPunObservable
+public class PlayerManager : MonoBehaviourPun, IPunObservable, IPunOwnershipCallbacks
 {
     public Player Player;
-    public bool MyTurn = false;
     public int Index;
     public List<PlayingCard> hand = new List<PlayingCard>();
     public Transform HandPosition
@@ -44,16 +43,25 @@ public class PlayerManager : MonoBehaviour, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(Player);
-            stream.SendNext(MyTurn);
             stream.SendNext(TotalDrinks);
             stream.SendNext(Index);
         }
         else if (stream.IsReading) 
         {
             Player = (Player)stream.ReceiveNext();
-            MyTurn = (bool)stream.ReceiveNext();
             TotalDrinks = (int)stream.ReceiveNext();
             Index = (int)stream.ReceiveNext();
         }
+    }
+
+    public void OnOwnershipRequest(PhotonView targetView, Player requestingPlayer)
+    {
+        Debug.LogError("Ownership request");
+        photonView.TransferOwnership(requestingPlayer);
+    }
+
+    public void OnOwnershipTransfered(PhotonView targetView, Player previousOwner)
+    {
+        //Needed for interface
     }
 }
