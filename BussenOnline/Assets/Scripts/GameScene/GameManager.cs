@@ -100,15 +100,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (activePlayerIndex + 1 == players.Count)
         {
-            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[0].Player);
+            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, players[0].Player);
             NextRound();
         }
         else //If there is another player that hasn't been this round
         {
+            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, players[activePlayerIndex + 1].Player);
+
             SetActivePlayerIndex(activePlayerIndex + 1);
             ActivePlayer = players[activePlayerIndex];
-
-            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
         }
     }
 
@@ -137,9 +137,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             hash.Add("current round", currentRound);
             PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         }
-
-        //Update the text of whose turn it is
-        photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
     }
 
     private void UpdateCardList()
@@ -188,6 +185,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             players[player.Index] = player;
         }
 
+        photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, players[0].Player);
         NextRound();
     }
     #endregion
