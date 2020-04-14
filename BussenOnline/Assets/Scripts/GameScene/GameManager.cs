@@ -167,7 +167,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         ActivePlayer.TotalDrinks++;
     }
 
-
     IEnumerator CreateLocalPlayerList(float time)
     {
         yield return new WaitForSeconds(time);
@@ -206,6 +205,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             cardToGive.photonView.RequestOwnership();
             cardToGive.AddToHand(ActivePlayer);
+            cardToGive.hasOwner = true;
 
             if (cardToGive.cardColor != cardColor)
                 WrongAnswer();
