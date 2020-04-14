@@ -98,13 +98,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region Custom Methods
     public void NextMove()
     {
-        Debug.LogError("Next move called");
         if (activePlayerIndex + 1 == players.Count)
             NextRound();
         else //If there is another player that hasn't been this round
         {
-            Debug.LogError("Setting player to false; " + ActivePlayer.Player.NickName);
-
             SetActivePlayerIndex(activePlayerIndex + 1);
             ActivePlayer = players[activePlayerIndex];
         }
@@ -114,8 +111,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void NextRound()
     {
-        Debug.LogError("Next round called");
-
         //In the first round there isn't an active player yet
         if (ActivePlayer == null)
         {
@@ -188,7 +183,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //This properties also sets muTurn to true
         ActivePlayer = players[activePlayerIndex];
-        Debug.LogError(ActivePlayer.Player.NickName);
         if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
         {
             UpdateCardList();
