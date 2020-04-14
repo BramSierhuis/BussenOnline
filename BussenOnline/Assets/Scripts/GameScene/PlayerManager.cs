@@ -55,7 +55,6 @@ public class PlayerManager : MonoBehaviourPun, IPunObservable, IPunOwnershipCall
 
     public void OnOwnershipRequest(PhotonView targetView, Player requestingPlayer)
     {
-        Debug.LogError("Ownership request");
         photonView.TransferOwnership(requestingPlayer);
     }
 

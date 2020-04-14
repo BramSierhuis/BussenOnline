@@ -46,8 +46,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         set 
         { 
             activePlayer = value;
-
-            activePlayer.photonView.RequestOwnership();
         }
     }
     #endregion
@@ -157,14 +155,27 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.SetCustomProperties(activePlayerHash);
     }
 
+    private PlayingCard GiveCard(PlayerManager player)
+    {
+        PlayingCard cardToGive = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
+        playingCards.Remove(cardToGive);
+
+        cardToGive.photonView.RequestOwnership();
+        cardToGive.AddToHand(player);
+        cardToGive.hasOwner = true;
+
+        return cardToGive;
+    }
+
     private void CorrectAnswer()
     {
 
     }
 
-    private void WrongAnswer()
+    private void WrongAnswer(int drinks)
     {
-        ActivePlayer.TotalDrinks++;
+        ActivePlayer.photonView.RequestOwnership();
+        ActivePlayer.TotalDrinks+= drinks;
     }
 
     IEnumerator CreateLocalPlayerList(float time)
@@ -199,25 +210,56 @@ public class GameManager : MonoBehaviourPunCallbacks
             Enum.TryParse(color, out Enums.CardColor cardColor);
 
             UpdateCardList();
-            
-            PlayingCard cardToGive = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
-            playingCards.Remove(cardToGive);
 
-            cardToGive.photonView.RequestOwnership();
-            cardToGive.AddToHand(ActivePlayer);
-            cardToGive.hasOwner = true;
+            PlayingCard cardToGive = GiveCard(ActivePlayer);
 
             if (cardToGive.cardColor != cardColor)
-                WrongAnswer();
+                WrongAnswer(1);
             else
                 CorrectAnswer();
 
             NextMove();
         }
-        else
+    }
+
+    public void OnClick_TakeHigherCard(bool higher)
+    {
+        ActivePlayer = players[activePlayerIndex];
+        if(ActivePlayer.Player == PhotonNetwork.LocalPlayer)
         {
-            Debug.LogError("Active player: " + ActivePlayer.Player.NickName);
-            Debug.LogError("Local player: " + PhotonNetwork.LocalPlayer.NickName);
+            PlayingCard cardToGive = GiveCard(ActivePlayer);
+
+            if (cardToGive.value == activePlayer.hand[0].value)
+            {
+                WrongAnswer(2);
+            }
+            else
+            {
+                if (higher)
+                {
+                    if (cardToGive.value < activePlayer.hand[0].value)
+                    {
+                        WrongAnswer(1);
+                    }
+                    else
+                    {
+                        CorrectAnswer();
+                    }
+                }
+                else
+                {
+                    if (cardToGive.value > activePlayer.hand[0].value)
+                    {
+                        WrongAnswer(1);
+                    }
+                    else
+                    {
+                        CorrectAnswer();
+                    }
+                }
+            }
+
+            NextMove();
         }
     }
     #endregion
@@ -229,8 +271,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if(key.ToString() == "current round")
             {
-                Debug.LogError("Round chaged: " + (int)PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
-
                 switch ((int)PhotonNetwork.CurrentRoom.CustomProperties["current round"])
                 {
                     case 20: //Init
