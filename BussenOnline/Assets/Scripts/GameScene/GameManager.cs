@@ -78,6 +78,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
 
             CardManager.instance.GenerateCards();
+            photonView.RPC("RPC_PopulateCardsList", RpcTarget.Others);
+
         }
 
         foreach (Transform spawnPoint in spawnPositions)
@@ -148,14 +150,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    private void PopulateCardList()
-    {
-        foreach (GameObject cardGO in GameObject.FindGameObjectsWithTag("PlayingCard"))
-        {
-            playingCards.Add(cardGO.GetComponent<PlayingCard>());
-        }
-    }
-
     IEnumerator CreateLocalPlayerList(float time)
     {
         yield return new WaitForSeconds(time);
@@ -185,7 +179,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
         {
-            PopulateCardList();
             UpdateCardList();
             
             PlayingCard cardToGive = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
@@ -275,6 +268,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             statusText.text = "Jouw beurd!";
         else
             statusText.text = "Speler: " + nextActivePlayer.NickName + " zijn beurd";
+    }    
+    
+    [PunRPC]
+    private void RPC_PopulateCardsList()
+    {
+        Debug.Log("PopulateCardsList() RPC Callded");
+
+        foreach (GameObject cardGO in GameObject.FindGameObjectsWithTag("PlayingCard"))
+        {
+            playingCards.Add(cardGO.GetComponent<PlayingCard>());
+        }
     }
     #endregion
 }

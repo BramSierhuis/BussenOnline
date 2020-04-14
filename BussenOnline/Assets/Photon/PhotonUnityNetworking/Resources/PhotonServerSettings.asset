@@ -36,6 +36,8 @@ MonoBehaviour:
   - RPC_ChangeReadyState
   - RPC_NextMove
   - RPC_UpdateTurnUI
+  - RPC_PopulateCardsList
+  - RPC_PopulatePlayersList
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
