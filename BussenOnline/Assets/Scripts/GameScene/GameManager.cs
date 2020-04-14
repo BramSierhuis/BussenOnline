@@ -99,14 +99,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void NextMove()
     {
         if (activePlayerIndex + 1 == players.Count)
+        {
+            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[0].Player);
             NextRound();
+        }
         else //If there is another player that hasn't been this round
         {
             SetActivePlayerIndex(activePlayerIndex + 1);
             ActivePlayer = players[activePlayerIndex];
-        }
 
-        photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex + 1].Player);
+            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
+        }
     }
 
     private void NextRound()
