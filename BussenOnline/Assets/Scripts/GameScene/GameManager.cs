@@ -230,32 +230,102 @@ public class GameManager : MonoBehaviourPunCallbacks
             PlayingCard cardToGive = GiveCard(ActivePlayer);
 
             if (cardToGive.value == activePlayer.hand[0].value)
-            {
                 WrongAnswer(2);
-            }
             else
             {
                 if (higher)
                 {
                     if (cardToGive.value < activePlayer.hand[0].value)
-                    {
                         WrongAnswer(1);
-                    }
                     else
-                    {
                         CorrectAnswer();
-                    }
                 }
                 else
                 {
                     if (cardToGive.value > activePlayer.hand[0].value)
-                    {
                         WrongAnswer(1);
-                    }
                     else
-                    {
                         CorrectAnswer();
-                    }
+                }
+            }
+
+            NextMove();
+        }
+    }
+
+    public void OnClick_TakeInsideCard(bool inside)
+    {
+        ActivePlayer = players[activePlayerIndex];
+        if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
+        {
+            PlayingCard cardToGive = GiveCard(ActivePlayer);
+
+            //Check if the card value is the same as one in the hand
+            if (cardToGive.value == activePlayer.hand[0].value || cardToGive.value == activePlayer.hand[1].value)
+                WrongAnswer(2);
+            else
+            {
+                //Find the highest and lowest card in hand
+                int min, max;
+                if (activePlayer.hand[0].value > activePlayer.hand[1].value)
+                {
+                    min = activePlayer.hand[1].value;
+                    max = activePlayer.hand[0].value;
+                }
+                else
+                {
+                    min = activePlayer.hand[0].value;
+                    max = activePlayer.hand[1].value;
+                }
+
+                if (inside)
+                {
+                    if (!(cardToGive.value > min && cardToGive.value < max))
+                        WrongAnswer(1);
+                    else
+                        CorrectAnswer();
+                }
+                else
+                {
+                    if (cardToGive.value > min && cardToGive.value < max)
+                        WrongAnswer(1);
+                    else
+                        CorrectAnswer();
+                }
+            }
+
+            NextMove();
+        }
+    }
+
+    public void OnClick_TakeCardType(string type)
+    {
+        ActivePlayer = players[activePlayerIndex];
+        if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
+        {
+            Enum.TryParse(type, out Enums.CardType cardType);
+
+            bool disco = true;
+            foreach (PlayingCard card in activePlayer.hand)
+            {
+                if (card.cardType == cardType)
+                    disco = false;
+            }
+
+            //Has to be called after checking for disco because calling this removes a card from the list
+            PlayingCard cardToGive = GiveCard(ActivePlayer);
+
+            if (cardToGive.cardType != cardType)
+                WrongAnswer(1);
+            else
+            {
+                if (disco)
+                {
+                    activePlayer.photonView.RPC("RPC_AddDrink", RpcTarget.Others, 1);
+                }
+                else
+                {
+                    CorrectAnswer();
                 }
             }
 
@@ -283,15 +353,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                         round1Panel.SetActive(false);
                         round2Panel.SetActive(true);
                         break;
-                    case 3: //InsideOut
+                    case 2: //InsideOut
                         round2Panel.SetActive(false);
                         round3Panel.SetActive(true);
                         break;
-                    case 4: //Disco
+                    case 3: //Disco
                         round3Panel.SetActive(false);
                         round4Panel.SetActive(true);
                         break;
-                    case 5: //Pyramid
+                    case 4: //Winnerpanel
                         round4Panel.SetActive(false);
                         winnerPanel.SetActive(true);
 

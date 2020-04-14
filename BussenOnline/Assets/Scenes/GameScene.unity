@@ -2295,8 +2295,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: TakeCardType
+      - m_Target: {fileID: 2062797105}
+        m_MethodName: OnClick_TakeCardType
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2444,8 +2444,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: TakeHigherCard
+      - m_Target: {fileID: 2062797105}
+        m_MethodName: OnClick_TakeInsideCard
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2628,8 +2628,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: TakeCardType
+      - m_Target: {fileID: 2062797105}
+        m_MethodName: OnClick_TakeCardType
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2845,8 +2845,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: TakeHigherCard
+      - m_Target: {fileID: 2062797105}
+        m_MethodName: OnClick_TakeInsideCard
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3619,8 +3619,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: TakeCardType
+      - m_Target: {fileID: 2062797105}
+        m_MethodName: OnClick_TakeCardType
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3714,7 +3714,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 17, y: 19.599998}
-  m_SizeDelta: {x: 289.4, y: 45.1}
+  m_SizeDelta: {x: 378.1, y: 45.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1932225575427710409
 MonoBehaviour:
@@ -3832,7 +3832,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Binnen of buiten?
+  m_Text: Welk figuur?
 --- !u!1 &1932225575451178175
 GameObject:
   m_ObjectHideFlags: 0
@@ -4509,8 +4509,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: TakeCardType
+      - m_Target: {fileID: 2062797105}
+        m_MethodName: OnClick_TakeCardType
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
