@@ -428,6 +428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195b723284adf6742b987a298972cd79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardStackOffset: {x: 0.01, y: 0.02, z: 0}
   cardTemplate: {fileID: 7380610526949715409, guid: 56ac000c1dbc8cf45aeb73cc038776b5,
     type: 3}
   cardImages:

@@ -7,6 +7,7 @@ using UnityEngine;
 public class CardManager : MonoBehaviour
 {
     public static CardManager instance;
+    public Vector3 cardStackOffset;
 
     public GameObject cardTemplate;
     public Sprite[] cardImages;
@@ -24,7 +25,7 @@ public class CardManager : MonoBehaviour
             {
                 for (int j = 1; j < 14; j++)
                 {
-                    GameObject card = PhotonNetwork.Instantiate(cardTemplate.name, new Vector3(0, 0, 0), Quaternion.identity, 0);
+                    GameObject card = PhotonNetwork.Instantiate(cardTemplate.name, cardTemplate.transform.position, cardTemplate.transform.rotation, 0);
                     PlayingCard playingCard = card.GetComponent<PlayingCard>();
 
                     GameManager.instance.playingCards.Add(playingCard);

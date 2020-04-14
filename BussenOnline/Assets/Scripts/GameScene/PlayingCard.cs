@@ -16,7 +16,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
 
     private Sprite front = null;
     private SpriteRenderer sr;
-    private bool showFront = true;
+    private bool showFront = false;
 
     private void Awake()
     {
@@ -26,6 +26,11 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     public void ShowBack()
     {
         showFront = false;
+    }
+
+    public void ShowFront()
+    {
+        showFront = true;
     }
 
     public void AddToHand(PlayerManager player)
@@ -94,13 +99,11 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
 
     public void OnOwnershipRequest(PhotonView targetView, Player requestingPlayer)
     {
-        Debug.Log("OnOwnershipRequest(): Player " + requestingPlayer + " requests ownership of: " + targetView + ".");
-
         photonView.TransferOwnership(requestingPlayer);
     }
 
     public void OnOwnershipTransfered(PhotonView targetView, Player previousOwner)
     {
-        //
+        //Needed for interface
     }
 }
