@@ -81,7 +81,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         StartCoroutine(ExecuteAfterTime(1));
     }
 
-
     public void NextMove()
     {
         if (activePlayerIndex + 1 == players.Count)
@@ -94,7 +93,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             ActivePlayer = players[activePlayerIndex];
         }
 
-        statusText.text = "Speler: " + ActivePlayer.Player.NickName + " zijn beurd";
+        photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
     }
 
     private void NextRound()
@@ -106,7 +105,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 if (i != -1)
                     ActivePlayer = players[i]; //Set the active player to the local player
 
-                statusText.text = "Speler: " + ActivePlayer.Player.NickName + " zijn beurd";
+            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
         }
         else //If this isn't the first round
         {
@@ -114,6 +113,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
             ActivePlayer = players[0];
             activePlayerIndex = 0;
+
+            photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
 
             Enums.GameState currentRound = (Enums.GameState)(PhotonNetwork.CurrentRoom.CustomProperties["current round"]);
             currentRound += 1;
@@ -219,4 +220,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
+
+
+    #region RPC's
+    [PunRPC]
+    private void RPC_UpdateTurnUI(Player nextActivePlayer)
+    {
+        if (PhotonNetwork.LocalPlayer == nextActivePlayer)
+            statusText.text = "Jouw beurd!";
+        else
+            statusText.text = "Speler: " + nextActivePlayer.NickName + " zijn beurd";
+    }
+    #endregion
 }
