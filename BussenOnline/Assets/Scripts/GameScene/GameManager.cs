@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField]
     [Tooltip("The positions that the player UI can spawn")]
     private Transform[] spawnPositions;
+
+    public List<PlayingCard> playingCards;
     #endregion
 
     #region References
@@ -74,6 +76,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 id++;
             }
+
+            CardManager.instance.GenerateCards();
         }
 
         foreach (Transform spawnPoint in spawnPositions)

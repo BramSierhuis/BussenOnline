@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7380610526949715421}
   - component: {fileID: 7380610526949715420}
+  - component: {fileID: 331883567091579947}
   - component: {fileID: 7380610526949715423}
   - component: {fileID: 7380610526949715422}
-  - component: {fileID: 7380610526949715418}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -84,6 +84,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &331883567091579947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7380610526949715409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be8053454588b3b429c016e60e13488e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardType: 0
+  cardColor: 0
+  value: 0
+  back: {fileID: 21300000, guid: a6ef8631880fb7f409305008ee2df58e, type: 3}
 --- !u!114 &7380610526949715423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,6 +119,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   ObservedComponents:
   - {fileID: 7380610526949715422}
+  - {fileID: 331883567091579947}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -121,15 +138,3 @@ MonoBehaviour:
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
---- !u!114 &7380610526949715418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7380610526949715409}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cd61afb8f761804ba9be47fe6fd2e90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
