@@ -36,8 +36,6 @@ public class CardManager : MonoBehaviour
                         playingCard.cardColor = Enums.CardColor.Red;
                     else //The card is black
                         playingCard.cardColor = Enums.CardColor.Black;
-                    //card.GetComponent<SpriteRenderer>().sprite = sprite;
-                    //playingCard.ShowBack();
                 }
             }
         }

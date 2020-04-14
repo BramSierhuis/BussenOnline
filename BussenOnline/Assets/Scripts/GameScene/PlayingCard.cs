@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System;
+using Photon.Realtime;
 
-public class PlayingCard : MonoBehaviour, IPunObservable
+public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallbacks
 {
     public Enums.CardType cardType;
     public Enums.CardColor cardColor;
     public int value;
     public Sprite back;
+    public float speed = 5f;
+    public bool hasOwner;
 
     private Sprite front = null;
     private SpriteRenderer sr;
@@ -22,12 +25,43 @@ public class PlayingCard : MonoBehaviour, IPunObservable
 
     public void ShowBack()
     {
-        sr.sprite = back;
+        showFront = false;
     }
 
-    public void ShowFront()
+    public void AddToHand(PlayerManager player)
     {
-        sr.sprite = front;
+        player.hand.Add(this);
+
+        StartCoroutine(MoveWithRotation(player.HandPosition));
+    }
+
+    IEnumerator MoveWithRotation(Transform to)
+    {
+        float time = 0;
+        float lerpValue;
+        bool frontShown = false;
+        Transform from = transform; //From y rotation has to be 180
+
+        from.eulerAngles = -transform.eulerAngles;
+
+        float journeyLength = Vector3.Distance(from.position, to.position);
+
+        while (transform.position != to.position)
+        {
+            time += Time.deltaTime;
+            lerpValue = time / (1 / (speed / journeyLength));
+
+            if (transform.eulerAngles.y < 90 && !frontShown)
+            {
+                showFront = true;
+                frontShown = true;
+            }
+
+            transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, Mathf.SmoothStep(0, 1, lerpValue));
+            transform.position = Vector3.Lerp(from.position, to.position, Mathf.SmoothStep(0, 1, lerpValue));
+
+            yield return null;
+        }
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -37,6 +71,8 @@ public class PlayingCard : MonoBehaviour, IPunObservable
 
         if (showFront && sr.sprite != front)
             sr.sprite = front;
+        else if (!showFront && sr.sprite != back)
+            sr.sprite = back;
 
         if (stream.IsWriting)
         {
@@ -44,6 +80,7 @@ public class PlayingCard : MonoBehaviour, IPunObservable
             stream.SendNext(cardColor);
             stream.SendNext(value);
             stream.SendNext(showFront);
+            stream.SendNext(hasOwner);
         }
         else if (stream.IsReading)
         {
@@ -51,6 +88,19 @@ public class PlayingCard : MonoBehaviour, IPunObservable
             cardColor = (Enums.CardColor)stream.ReceiveNext();
             value = (int)stream.ReceiveNext();
             showFront = (bool)stream.ReceiveNext();
+            hasOwner = (bool)stream.ReceiveNext();
         }
+    }
+
+    public void OnOwnershipRequest(PhotonView targetView, Player requestingPlayer)
+    {
+        Debug.Log("OnOwnershipRequest(): Player " + requestingPlayer + " requests ownership of: " + targetView + ".");
+
+        photonView.TransferOwnership(requestingPlayer);
+    }
+
+    public void OnOwnershipTransfered(PhotonView targetView, Player previousOwner)
+    {
+        //
     }
 }

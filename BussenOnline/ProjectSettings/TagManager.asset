@@ -6,6 +6,7 @@ TagManager:
   tags:
   - UI Text test
   - PlayerSpawnPoint
+  - PlayingCard
   layers:
   - Default
   - TransparentFX

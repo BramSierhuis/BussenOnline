@@ -10,6 +10,11 @@ public class PlayerManager : MonoBehaviour, IPunObservable
     public Player Player;
     public bool MyTurn = false;
     public int Index;
+    public List<PlayingCard> hand = new List<PlayingCard>();
+    public Transform HandPosition
+    {
+        get { return playerUI.handPosition; }
+    }
 
     [SerializeField]
     private int totalDrinks = 0;
@@ -26,9 +31,12 @@ public class PlayerManager : MonoBehaviour, IPunObservable
     [SerializeField]
     private Text totalDrinksText;
 
+    private PlayerUI playerUI;
+
     private void Awake()
     {
         totalDrinksText.text = TotalDrinks.ToString();
+        playerUI = GetComponent<PlayerUI>();
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

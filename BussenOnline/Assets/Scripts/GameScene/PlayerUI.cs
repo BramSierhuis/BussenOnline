@@ -19,9 +19,7 @@ public class PlayerUI : MonoBehaviourPun, IPunObservable
         }
     }
 
-    [SerializeField]
-    private Transform handPosition;
-    public Transform HandPosition { get { return handPosition; } }
+    public Transform handPosition;
 
     [SerializeField]
     private Text nicknameText;
@@ -32,7 +30,10 @@ public class PlayerUI : MonoBehaviourPun, IPunObservable
     private void Start()
     {
         if (gameObject.transform.position.x > 0) //If we are on the right side
+        {
             canvas.transform.position += canvasOffset;
+            handPosition.position += canvasOffset;
+        }
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

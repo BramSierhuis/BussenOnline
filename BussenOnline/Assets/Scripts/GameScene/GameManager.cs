@@ -137,6 +137,25 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, ActivePlayer.Player = players[activePlayerIndex].Player);
     }
 
+    private void UpdateCardList()
+    {
+        foreach(GameObject cardGO in GameObject.FindGameObjectsWithTag("PlayingCard"))
+        {
+            PlayingCard playingCard = cardGO.GetComponent<PlayingCard>();
+
+            if (playingCard.hasOwner)
+                playingCards.Remove(playingCard);
+        }
+    }
+
+    private void PopulateCardList()
+    {
+        foreach (GameObject cardGO in GameObject.FindGameObjectsWithTag("PlayingCard"))
+        {
+            playingCards.Add(cardGO.GetComponent<PlayingCard>());
+        }
+    }
+
     IEnumerator CreateLocalPlayerList(float time)
     {
         yield return new WaitForSeconds(time);
@@ -166,7 +185,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
         {
-            Debug.Log(color);
+            PopulateCardList();
+            UpdateCardList();
+            
+            PlayingCard cardToGive = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
+            playingCards.Remove(cardToGive);
+
+            cardToGive.photonView.RequestOwnership();
+            cardToGive.AddToHand(ActivePlayer);
+
             NextMove();
         }
         else
