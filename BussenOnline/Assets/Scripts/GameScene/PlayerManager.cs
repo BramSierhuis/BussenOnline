@@ -15,7 +15,6 @@ public class PlayerManager : MonoBehaviourPun, IPunObservable, IPunOwnershipCall
         get { return playerUI.handPosition; }
     }
 
-    [SerializeField]
     private int totalDrinks = 0;
     public int TotalDrinks
     {

@@ -160,6 +160,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.SetCustomProperties(activePlayerHash);
     }
 
+    private void CorrectAnswer()
+    {
+
+    }
+
+    private void WrongAnswer()
+    {
+        ActivePlayer.TotalDrinks++;
+    }
+
+
     IEnumerator CreateLocalPlayerList(float time)
     {
         yield return new WaitForSeconds(time);
@@ -188,6 +199,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         ActivePlayer = players[activePlayerIndex];
         if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
         {
+            Enum.TryParse(color, out Enums.CardColor cardColor);
+
             UpdateCardList();
             
             PlayingCard cardToGive = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
@@ -195,6 +208,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             cardToGive.photonView.RequestOwnership();
             cardToGive.AddToHand(ActivePlayer);
+
+            if (cardToGive.cardColor != cardColor)
+                WrongAnswer();
+            else
+                CorrectAnswer();
 
             NextMove();
         }
