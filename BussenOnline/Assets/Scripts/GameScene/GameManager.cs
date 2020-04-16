@@ -41,7 +41,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public List<PlayingCard> playingCards;
+    public List<PlayingCard> cardsInStack;
+    public List<PlayingCard> cardsInhand;
+    public List<PlayingCard> cardsInPyramid;
     #endregion
 
     #region References
@@ -55,6 +57,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     private GameObject round4Panel;
     [SerializeField]
     private GameObject winnerPanel;
+    [SerializeField]
+    private GameObject masterPyramidLoadPanel;
+    [SerializeField]
+    private GameObject clientPyramidLoadPanel;
     [SerializeField]
     private Text statusText;
     [SerializeField]
@@ -171,8 +177,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private PlayingCard GiveCard(PlayerManager player)
     {
-        PlayingCard cardToGive = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
-        photonView.RPC("RPC_RemoveCard", RpcTarget.All, cardToGive.photonView.ViewID);
+        PlayingCard cardToGive = cardsInStack[UnityEngine.Random.Range(0, cardsInStack.Count)];
+        photonView.RPC("RPC_AddCardToHandList", RpcTarget.All, cardToGive.photonView.ViewID);
 
         cardToGive.photonView.RequestOwnership();
         cardToGive.AddToHand(player);
@@ -216,28 +222,38 @@ public class GameManager : MonoBehaviourPunCallbacks
         round4Panel.SetActive(true);
     }
 
-    public void ShowPyramid()
+    private void ShowPyramid()
     {
         round4Panel.SetActive(false);
-        if (PhotonNetwork.LocalPlayer.IsMasterClient) //All clients call ShowPyramid, so only execute the moving code once
+
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
-            for (int i = 0; i < TotalPyramidCards; i++)
-            {
-                PlayingCard cardToMove = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
-                photonView.RPC("RPC_RemoveCard", RpcTarget.All, cardToMove.photonView.ViewID);
+            masterPyramidLoadPanel.SetActive(true);
+        }
+        else
+        {
+            clientPyramidLoadPanel.SetActive(true);
+        }
+    }
 
-                cardToMove.photonView.RequestOwnership();
-                cardToMove.AddToPyramid(i);
+    private void CreatePyramid()
+    {
+        for (int i = 0; i < TotalPyramidCards; i++)
+        {
+            PlayingCard cardToMove = cardsInStack[UnityEngine.Random.Range(0, cardsInStack.Count)];
+            photonView.RPC("RPC_AddCardToPyramidList", RpcTarget.All, cardToMove.photonView.ViewID);
 
-                if (UnityEngine.Random.Range(0, 100) <= doubleChance)
-                    cardToMove.MakeDouble();
-            }
+            cardToMove.photonView.RequestOwnership();
+            cardToMove.AddToPyramid(i);
 
-            foreach (PlayingCard card in playingCards)
-            {
-                card.photonView.RequestOwnership();
-                card.MoveToStack();
-            }
+            if (UnityEngine.Random.Range(0, 100) <= doubleChance)
+                cardToMove.MakeDouble();
+        }
+
+        foreach (PlayingCard card in cardsInStack)
+        {
+            card.photonView.RequestOwnership();
+            card.MoveToStack();       
         }
     }
     #endregion
@@ -403,6 +419,16 @@ public class GameManager : MonoBehaviourPunCallbacks
             NextMove();
         }
     }
+
+    public void OnClick_StartPyramid()
+    {
+        CreatePyramid();
+
+        clientPyramidLoadPanel.SetActive(false);
+        masterPyramidLoadPanel.SetActive(false);
+
+       // foreach (PlayingCard card in TotalPyramidCards;)
+    }
     #endregion
 
     #region Photon Callbacks
@@ -431,7 +457,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                         break;
                     case 4: //Pyramid
                         ShowPyramid();
-                        break;
+                            break;
                     case 99: //Winnerpanel
                         round4Panel.SetActive(false);
                         winnerPanel.SetActive(true);
@@ -474,26 +500,45 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         foreach (GameObject cardGO in GameObject.FindGameObjectsWithTag("PlayingCard"))
         {
-            playingCards.Add(cardGO.GetComponent<PlayingCard>());
+            cardsInStack.Add(cardGO.GetComponent<PlayingCard>());
         }
     }
 
     [PunRPC]
-    private void RPC_RemoveCard(int id)
+    private void RPC_AddCardToPyramidList(int id)
     {
-        PlayingCard cardToRemove = null;
+        PlayingCard cardToAddToPyramid = null;
 
-        foreach (PlayingCard card in playingCards)
+        foreach (PlayingCard card in cardsInStack)
         {
 
             if (card.photonView.ViewID == id)
             {
-                cardToRemove = card;
+                cardToAddToPyramid = card;
                 break;
             }
         }
 
-        playingCards.Remove(cardToRemove);
+        cardsInStack.Remove(cardToAddToPyramid);
+        cardsInPyramid.Add(cardToAddToPyramid);
+    }
+
+    [PunRPC]
+    private void RPC_AddCardToHandList(int id)
+    {
+        PlayingCard cardToAddTohand = null;
+
+        foreach (PlayingCard card in cardsInStack)
+        {
+            if (card.photonView.ViewID == id)
+            {
+                cardToAddTohand = card;
+                break;
+            }
+        }
+
+        cardsInStack.Remove(cardToAddTohand);
+        cardsInhand.Add(cardToAddTohand);
     }
     #endregion
 }

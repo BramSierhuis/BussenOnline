@@ -40,6 +40,8 @@ MonoBehaviour:
   - RPC_PopulatePlayersList
   - RPC_AddDrink
   - RPC_RemoveCard
+  - RPC_AddCardToHandList
+  - RPC_AddCardToPyramidList
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
