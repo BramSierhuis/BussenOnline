@@ -26,6 +26,7 @@ public class CardManager : MonoBehaviour
                 for (int j = 1; j < 14; j++)
                 {
                     GameObject card = PhotonNetwork.Instantiate(cardTemplate.name, cardTemplate.transform.position, cardTemplate.transform.rotation, 0);
+                    card.name = j + " of " + ((Enums.CardType)i).ToString();
                     PlayingCard playingCard = card.GetComponent<PlayingCard>();
 
                     GameManager.instance.cardsInStack.Add(playingCard);

@@ -42,6 +42,7 @@ MonoBehaviour:
   - RPC_RemoveCard
   - RPC_AddCardToHandList
   - RPC_AddCardToPyramidList
+  - RPC_DisableclientPyramidLoadPanel
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

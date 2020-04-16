@@ -58,6 +58,11 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
         StartCoroutine(FlipCard());
     }
 
+    public void Move(Transform to)
+    {
+        StartCoroutine(MoveWithRotation(to));
+    }
+
     public void MakeDouble()
     {
         isDouble = true;
@@ -119,9 +124,8 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
         Transform from = transform; //From y rotation has to be 180
         Transform to = transform;
 
-        to.eulerAngles = new Vector3(from.eulerAngles.x, 0, from.eulerAngles.y);
-
-        while (transform.eulerAngles.y > 0)
+        to.eulerAngles = new Vector3(from.eulerAngles.x, 0, from.eulerAngles.z);
+        while (transform.eulerAngles.y < 179.5)
         {
             time += Time.deltaTime;
 
@@ -131,7 +135,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
                 frontShown = true;
             }
 
-            transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, Mathf.SmoothStep(0, 1, .5f));
+            transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, time);
 
             yield return null;
         }
@@ -145,7 +149,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
 
         to.eulerAngles = new Vector3(from.eulerAngles.x, from.eulerAngles.y, 90);
 
-        while (transform.eulerAngles.z < 90)
+        while (transform.eulerAngles.z < 89.5)
         {
             time += Time.deltaTime;
 

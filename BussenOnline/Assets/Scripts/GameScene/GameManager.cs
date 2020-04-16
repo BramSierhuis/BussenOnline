@@ -60,7 +60,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField]
     private GameObject masterPyramidLoadPanel;
     [SerializeField]
-    private GameObject clientPyramidLoadPanel;
+    private GameObject clientPyramidLoadPanel;    
+    [SerializeField]
+    private GameObject masterPyramidPanel;
+    [SerializeField]
+    private GameObject clientPyramidPanel;
     [SerializeField]
     private Text statusText;
     [SerializeField]
@@ -69,6 +73,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     #region Private Fields
     private List<PlayerManager> players = new List<PlayerManager>();
+    private int pyramidIndex = -1;
     private int activePlayerIndex;
     private PlayerManager activePlayer;
 
@@ -175,6 +180,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.SetCustomProperties(activePlayerHash);
     }
 
+    private void SetPyramidCard(int index)
+    {
+        ExitGames.Client.Photon.Hashtable activePyramidCardHash = new ExitGames.Client.Photon.Hashtable();
+        activePyramidCardHash.Add("pyramid index", index);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(activePyramidCardHash);
+    }
+
     private PlayingCard GiveCard(PlayerManager player)
     {
         PlayingCard cardToGive = cardsInStack[UnityEngine.Random.Range(0, cardsInStack.Count)];
@@ -195,6 +207,27 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         ActivePlayer.photonView.RequestOwnership();
         ActivePlayer.TotalDrinks+= drinks;
+    }
+
+    private void CreatePyramid()
+    {
+        for (int i = 0; i < TotalPyramidCards; i++)
+        {
+            PlayingCard cardToMove = cardsInStack[UnityEngine.Random.Range(0, cardsInStack.Count)];
+            photonView.RPC("RPC_AddCardToPyramidList", RpcTarget.All, cardToMove.photonView.ViewID);
+
+            cardToMove.photonView.RequestOwnership();
+            cardToMove.AddToPyramid(i);
+
+            if (UnityEngine.Random.Range(0, 100) <= doubleChance)
+                cardToMove.MakeDouble();
+        }
+
+        foreach (PlayingCard card in cardsInStack)
+        {
+            card.photonView.RequestOwnership();
+            card.MoveToStack();
+        }
     }
     #endregion
 
@@ -233,27 +266,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         else
         {
             clientPyramidLoadPanel.SetActive(true);
-        }
-    }
-
-    private void CreatePyramid()
-    {
-        for (int i = 0; i < TotalPyramidCards; i++)
-        {
-            PlayingCard cardToMove = cardsInStack[UnityEngine.Random.Range(0, cardsInStack.Count)];
-            photonView.RPC("RPC_AddCardToPyramidList", RpcTarget.All, cardToMove.photonView.ViewID);
-
-            cardToMove.photonView.RequestOwnership();
-            cardToMove.AddToPyramid(i);
-
-            if (UnityEngine.Random.Range(0, 100) <= doubleChance)
-                cardToMove.MakeDouble();
-        }
-
-        foreach (PlayingCard card in cardsInStack)
-        {
-            card.photonView.RequestOwnership();
-            card.MoveToStack();       
         }
     }
     #endregion
@@ -420,14 +432,49 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public void OnClick_GotPyramidCard()
+    {
+        int i = players.FindIndex(x => x.Player == PhotonNetwork.LocalPlayer);
+        PlayerManager localPlayer = null;
+        if (i != -1)
+            localPlayer = players[i]; //Get the playerManager of the local player
+
+        foreach (PlayingCard card in localPlayer.hand)
+        {
+            if (card.value == cardsInPyramid[pyramidIndex].value)
+            {
+                card.Move(cardsInPyramid[pyramidIndex].transform);
+            }
+            else
+            {
+            }
+        }
+    }
+
+    public void OnClick_NextPyramidCard()
+    {
+        int tempindex = pyramidIndex;
+        SetPyramidCard((pyramidIndex + 1));
+
+        if (tempindex != pyramidIndex)
+        {
+            cardsInPyramid[pyramidIndex].photonView.RequestOwnership();
+            cardsInPyramid[pyramidIndex].Flip();
+        }
+        else
+        {
+            cardsInPyramid[pyramidIndex + 1].photonView.RequestOwnership();
+            cardsInPyramid[pyramidIndex + 1].Flip();
+        }
+    }
+
     public void OnClick_StartPyramid()
     {
         CreatePyramid();
-
-        clientPyramidLoadPanel.SetActive(false);
         masterPyramidLoadPanel.SetActive(false);
+        masterPyramidPanel.SetActive(true);
 
-       // foreach (PlayingCard card in TotalPyramidCards;)
+        photonView.RPC("RPC_DisableclientPyramidLoadPanel", RpcTarget.Others);
     }
     #endregion
 
@@ -480,6 +527,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             if(key.ToString() == "active player index")
             {
                 activePlayerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["active player index"];
+            }
+            if (key.ToString() == "pyramid index")
+            {
+                pyramidIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["pyramid index"];
             }
         }
     }
@@ -539,6 +590,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         cardsInStack.Remove(cardToAddTohand);
         cardsInhand.Add(cardToAddTohand);
+    }
+
+    [PunRPC]
+    private void RPC_DisableclientPyramidLoadPanel()
+    {
+        clientPyramidLoadPanel.SetActive(false);
+        clientPyramidPanel.SetActive(true);
     }
     #endregion
 }
