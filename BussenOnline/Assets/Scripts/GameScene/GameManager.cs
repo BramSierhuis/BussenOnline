@@ -321,7 +321,15 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 if (disco)
                 {
-                    activePlayer.photonView.RPC("RPC_AddDrink", RpcTarget.Others, 1);
+                    //Make all players drink
+                    foreach (PlayerManager player in players)
+                    {
+                        if (player != activePlayer)
+                        {
+                            player.photonView.RequestOwnership();
+                            player.TotalDrinks += 4;
+                        }
+                    }
                 }
                 else
                 {

@@ -62,12 +62,4 @@ public class PlayerManager : MonoBehaviourPun, IPunObservable, IPunOwnershipCall
     {
         //Needed for interface
     }
-
-    #region RPC's
-    [PunRPC]
-    private void RPC_AddDrink(int drinks)
-    {
-        TotalDrinks += drinks;
-    }
-    #endregion
 }
