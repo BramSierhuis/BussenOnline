@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region Custom Methods
-    public void NextMove()
+    private void NextMove()
     {
         if (activePlayerIndex + 1 == players.Count)
         {
@@ -176,6 +176,34 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         ActivePlayer.photonView.RequestOwnership();
         ActivePlayer.TotalDrinks+= drinks;
+    }
+
+    private void ShowRedBlack()
+    {
+        round1Panel.SetActive(true);
+    }
+
+    private void ShowHigherLower()
+    {
+        round1Panel.SetActive(false);
+        round2Panel.SetActive(true);
+    }
+
+    private void ShowInsideOut()
+    {
+        round2Panel.SetActive(false);
+        round3Panel.SetActive(true);
+    }
+
+    private void ShowPickCardType()
+    {
+        round3Panel.SetActive(false);
+        round4Panel.SetActive(true);
+    }
+
+    private void ShowPyramid()
+    {
+        round4Panel.SetActive(false);
     }
 
     IEnumerator CreateLocalPlayerList(float time)
@@ -355,21 +383,21 @@ public class GameManager : MonoBehaviourPunCallbacks
                         round1Panel.SetActive(false);
                         break;
                     case 0: //RedBlack
-                        round1Panel.SetActive(true);
+                        ShowRedBlack();
                         break;
                     case 1: //HigherLower
-                        round1Panel.SetActive(false);
-                        round2Panel.SetActive(true);
+                        ShowHigherLower();
                         break;
                     case 2: //InsideOut
-                        round2Panel.SetActive(false);
-                        round3Panel.SetActive(true);
+                        ShowInsideOut();
                         break;
                     case 3: //Disco
-                        round3Panel.SetActive(false);
-                        round4Panel.SetActive(true);
+                        ShowPickCardType();
                         break;
-                    case 4: //Winnerpanel
+                    case 4: //Pyramid
+                        ShowPyramid();
+                        break;
+                    case 99: //Winnerpanel
                         round4Panel.SetActive(false);
                         winnerPanel.SetActive(true);
 
