@@ -49,6 +49,13 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
         StartCoroutine(MoveWithRotation(handPosition));
     }
 
+    public void AddToPyramid(int position)
+    {
+        Transform pyramidPosition = GameManager.instance.pyramidSpawnPositions[position];
+
+        StartCoroutine(MoveWithRotation(pyramidPosition));
+    }
+
     IEnumerator MoveWithRotation(Transform to)
     {
         float time = 0;

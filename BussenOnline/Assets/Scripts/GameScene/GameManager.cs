@@ -16,9 +16,30 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Tooltip("The positions that the player UI can spawn")]
     private Transform[] spawnPositions;
 
+    [Tooltip("The spawnpositions of the card pyramid")]
+    public Transform[] pyramidSpawnPositions;
+
     [SerializeField]
     [Tooltip("The chance of making a card in the pyramid be a double in percent")]
     private float doubleChance = 10f;
+
+    [SerializeField]
+    private float pyramidGap = 0.4f;
+    [SerializeField]
+    private float pyramidLevels = 5f; //Max is 5
+    private float TotalPyramidCards { //The total cards of the pyramid, calculated based on the levels
+        get
+        {
+            int total = 0;
+
+            for (int i = 1; i <= pyramidLevels; i++)
+            {
+                total += i;
+            }
+
+            return total;
+        }
+    }
 
     public List<PlayingCard> playingCards;
     #endregion
@@ -207,13 +228,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         round4Panel.SetActive(true);
     }
 
-    private void ShowPyramid()
+    public void ShowPyramid()
     {
-        round4Panel.SetActive(false);
+        //round4Panel.SetActive(false);
 
-        foreach(PlayingCard card in playingCards)
+        for(int i = 0; i < TotalPyramidCards; i++)
         {
+            PlayingCard cardToMove = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
+            photonView.RPC("RPC_RemoveCard", RpcTarget.All, cardToMove.photonView.ViewID);
 
+            cardToMove.photonView.RequestOwnership();
+            cardToMove.AddToPyramid(i);
         }
     }
     #endregion
