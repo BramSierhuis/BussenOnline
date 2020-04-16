@@ -12,7 +12,6 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     public int value;
     public Sprite back;
     public float speed = 5f;
-    public bool hasOwner;
     public float cardsInHandOffset = 0.4f;
     public float cardsZOffset = 0.1f;
 
@@ -101,7 +100,6 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
             stream.SendNext(cardColor);
             stream.SendNext(value);
             stream.SendNext(showFront);
-            stream.SendNext(hasOwner);
         }
         else if (stream.IsReading)
         {
@@ -109,7 +107,6 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
             cardColor = (Enums.CardColor)stream.ReceiveNext();
             value = (int)stream.ReceiveNext();
             showFront = (bool)stream.ReceiveNext();
-            hasOwner = (bool)stream.ReceiveNext();
         }
     }
 

@@ -162,17 +162,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    private void UpdateCardList()
-    {
-        foreach(GameObject cardGO in GameObject.FindGameObjectsWithTag("PlayingCard"))
-        {
-            PlayingCard playingCard = cardGO.GetComponent<PlayingCard>();
-
-            if (playingCard.hasOwner)
-                playingCards.Remove(playingCard);
-        }
-    }
-
     private void SetActivePlayerIndex(int index)
     {
         ExitGames.Client.Photon.Hashtable activePlayerHash = new ExitGames.Client.Photon.Hashtable();
@@ -187,7 +176,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         cardToGive.photonView.RequestOwnership();
         cardToGive.AddToHand(player);
-        cardToGive.hasOwner = true;
 
         return cardToGive;
     }
@@ -274,8 +262,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (ActivePlayer.Player == PhotonNetwork.LocalPlayer)
         {
             Enum.TryParse(color, out Enums.CardColor cardColor);
-
-            UpdateCardList();
 
             PlayingCard cardToGive = GiveCard(ActivePlayer);
 
