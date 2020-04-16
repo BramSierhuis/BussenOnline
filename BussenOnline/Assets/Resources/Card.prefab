@@ -103,6 +103,7 @@ MonoBehaviour:
   speed: 2
   cardsInHandOffset: 0.3
   cardsZOffset: 0.1
+  stackPosition: {fileID: 0}
 --- !u!114 &7380610526949715423
 MonoBehaviour:
   m_ObjectHideFlags: 0

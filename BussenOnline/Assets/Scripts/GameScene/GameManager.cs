@@ -218,15 +218,23 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void ShowPyramid()
     {
-        //round4Panel.SetActive(false);
-
-        for(int i = 0; i < TotalPyramidCards; i++)
+        round4Panel.SetActive(false);
+        if (PhotonNetwork.LocalPlayer.IsMasterClient) //All clients call ShowPyramid, so only execute the moving code once
         {
-            PlayingCard cardToMove = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
-            photonView.RPC("RPC_RemoveCard", RpcTarget.All, cardToMove.photonView.ViewID);
+            for (int i = 0; i < TotalPyramidCards; i++)
+            {
+                PlayingCard cardToMove = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
+                photonView.RPC("RPC_RemoveCard", RpcTarget.All, cardToMove.photonView.ViewID);
 
-            cardToMove.photonView.RequestOwnership();
-            cardToMove.AddToPyramid(i);
+                cardToMove.photonView.RequestOwnership();
+                cardToMove.AddToPyramid(i);
+            }
+
+            foreach (PlayingCard card in playingCards)
+            {
+                card.photonView.RequestOwnership();
+                card.MoveToStack();
+            }
         }
     }
     #endregion

@@ -14,6 +14,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     public float speed = 5f;
     public float cardsInHandOffset = 0.4f;
     public float cardsZOffset = 0.1f;
+    public Transform stackPosition;
 
     private Sprite front = null;
     private SpriteRenderer sr;
@@ -22,6 +23,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        stackPosition = GameObject.FindWithTag("StackPosition").transform;
     }
 
     public void ShowBack()
@@ -53,6 +55,11 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
         Transform pyramidPosition = GameManager.instance.pyramidSpawnPositions[position];
 
         StartCoroutine(MoveWithRotation(pyramidPosition));
+    }
+
+    public void MoveToStack()
+    {
+        StartCoroutine(MoveWithRotation(stackPosition));
     }
 
     IEnumerator MoveWithRotation(Transform to)
