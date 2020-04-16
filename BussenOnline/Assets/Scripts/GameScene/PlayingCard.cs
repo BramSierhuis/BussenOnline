@@ -54,12 +54,17 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     {
         Transform pyramidPosition = GameManager.instance.pyramidSpawnPositions[position];
 
-        StartCoroutine(MoveWithRotation(pyramidPosition));
+        StartCoroutine(MoveWithoutRotation(pyramidPosition));
     }
 
     public void MoveToStack()
     {
-        StartCoroutine(MoveWithRotation(stackPosition));
+        StartCoroutine(MoveWithoutRotation(stackPosition));
+    }
+
+    public void Flip()
+    {
+        StartCoroutine(FlipCard());
     }
 
     IEnumerator MoveWithRotation(Transform to)
@@ -86,6 +91,50 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
 
             transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, Mathf.SmoothStep(0, 1, lerpValue));
             transform.position = Vector3.Lerp(from.position, to.position, Mathf.SmoothStep(0, 1, lerpValue));
+
+            yield return null;
+        }
+    }
+
+    IEnumerator MoveWithoutRotation(Transform to)
+    {
+        float time = 0;
+        float lerpValue;
+        Transform from = transform; //From y rotation has to be 180
+
+        float journeyLength = Vector3.Distance(from.position, to.position);
+
+        while (transform.position != to.position)
+        {
+            time += Time.deltaTime;
+            lerpValue = time / (1 / (speed / journeyLength));
+
+            transform.position = Vector3.Lerp(from.position, to.position, Mathf.SmoothStep(0, 1, lerpValue));
+
+            yield return null;
+        }
+    }
+
+    IEnumerator FlipCard()
+    {
+        float time = 0;
+        bool frontShown = false;
+        Transform from = transform; //From y rotation has to be 180
+        Transform to = transform;
+
+        to.eulerAngles = new Vector3(from.eulerAngles.x, 0, from.eulerAngles.y);
+
+        while (transform.eulerAngles.y > 0)
+        {
+            time += Time.deltaTime;
+
+            if (transform.eulerAngles.y < 90 && !frontShown)
+            {
+                showFront = true;
+                frontShown = true;
+            }
+
+            transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, Mathf.SmoothStep(0, 1, .5f));
 
             yield return null;
         }
