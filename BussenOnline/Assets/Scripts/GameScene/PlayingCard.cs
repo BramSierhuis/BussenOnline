@@ -127,7 +127,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
         to.eulerAngles = new Vector3(from.eulerAngles.x, 0, from.eulerAngles.z);
         while (transform.eulerAngles.y < 179.5)
         {
-            time += Time.deltaTime;
+            time += Time.deltaTime / 40;
 
             if (transform.eulerAngles.y < 90 && !frontShown)
             {

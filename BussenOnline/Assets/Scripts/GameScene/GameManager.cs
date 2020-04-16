@@ -475,6 +475,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         masterPyramidPanel.SetActive(true);
 
         photonView.RPC("RPC_DisableclientPyramidLoadPanel", RpcTarget.Others);
+        OnClick_NextPyramidCard();
     }
     #endregion
 
