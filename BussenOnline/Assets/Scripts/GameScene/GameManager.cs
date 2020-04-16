@@ -228,6 +228,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 cardToMove.photonView.RequestOwnership();
                 cardToMove.AddToPyramid(i);
+
+                if (UnityEngine.Random.Range(0, 100) <= doubleChance)
+                    cardToMove.MakeDouble();
             }
 
             foreach (PlayingCard card in playingCards)

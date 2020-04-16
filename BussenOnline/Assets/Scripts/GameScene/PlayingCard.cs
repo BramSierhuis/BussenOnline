@@ -15,6 +15,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     public float cardsInHandOffset = 0.4f;
     public float cardsZOffset = 0.1f;
     public Transform stackPosition;
+    public bool isDouble = false;
 
     private Sprite front = null;
     private SpriteRenderer sr;
@@ -24,16 +25,6 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     {
         sr = GetComponent<SpriteRenderer>();
         stackPosition = GameObject.FindWithTag("StackPosition").transform;
-    }
-
-    public void ShowBack()
-    {
-        showFront = false;
-    }
-
-    public void ShowFront()
-    {
-        showFront = true;
     }
 
     public void AddToHand(PlayerManager player)
@@ -65,6 +56,12 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
     public void Flip()
     {
         StartCoroutine(FlipCard());
+    }
+
+    public void MakeDouble()
+    {
+        isDouble = true;
+        StartCoroutine(Rotate90());
     }
 
     IEnumerator MoveWithRotation(Transform to)
@@ -140,6 +137,24 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
         }
     }
 
+    IEnumerator Rotate90()
+    {
+        float time = 0;
+        Transform from = transform; //From x rotation has to be 0
+        Transform to = transform;
+
+        to.eulerAngles = new Vector3(from.eulerAngles.x, from.eulerAngles.y, 90);
+
+        while (transform.eulerAngles.z < 90)
+        {
+            time += Time.deltaTime;
+
+            transform.rotation = Quaternion.Lerp(from.rotation, to.rotation, Mathf.SmoothStep(0, 1, .5f));
+
+            yield return null;
+        }
+    }
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (front == null)
@@ -156,6 +171,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
             stream.SendNext(cardColor);
             stream.SendNext(value);
             stream.SendNext(showFront);
+            stream.SendNext(isDouble);
         }
         else if (stream.IsReading)
         {
@@ -163,6 +179,7 @@ public class PlayingCard : MonoBehaviourPun, IPunObservable, IPunOwnershipCallba
             cardColor = (Enums.CardColor)stream.ReceiveNext();
             value = (int)stream.ReceiveNext();
             showFront = (bool)stream.ReceiveNext();
+            isDouble = (bool)stream.ReceiveNext();
         }
     }
 
