@@ -16,6 +16,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Tooltip("The positions that the player UI can spawn")]
     private Transform[] spawnPositions;
 
+    [SerializeField]
+    [Tooltip("The chance of making a card in the pyramid be a double in percent")]
+    private float doubleChance = 10f;
+
     public List<PlayingCard> playingCards;
     #endregion
 
@@ -93,7 +97,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-    #region Custom Methods
+    #region Private Methods
     private void NextMove()
     {
         if (activePlayerIndex + 1 == players.Count)
@@ -158,7 +162,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private PlayingCard GiveCard(PlayerManager player)
     {
         PlayingCard cardToGive = playingCards[UnityEngine.Random.Range(0, playingCards.Count)];
-        playingCards.Remove(cardToGive);
+        photonView.RPC("RPC_RemoveCard", RpcTarget.All, cardToGive.photonView.ViewID);
 
         cardToGive.photonView.RequestOwnership();
         cardToGive.AddToHand(player);
@@ -177,7 +181,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         ActivePlayer.photonView.RequestOwnership();
         ActivePlayer.TotalDrinks+= drinks;
     }
+    #endregion
 
+    #region ShowRoundUI
     private void ShowRedBlack()
     {
         round1Panel.SetActive(true);
@@ -204,8 +210,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void ShowPyramid()
     {
         round4Panel.SetActive(false);
-    }
 
+        foreach(PlayingCard card in playingCards)
+        {
+
+        }
+    }
+    #endregion
+
+    #region Coroutines
     IEnumerator CreateLocalPlayerList(float time)
     {
         yield return new WaitForSeconds(time);
@@ -437,12 +450,28 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_PopulateCardsList()
     {
-        Debug.Log("PopulateCardsList() RPC Callded");
-
         foreach (GameObject cardGO in GameObject.FindGameObjectsWithTag("PlayingCard"))
         {
             playingCards.Add(cardGO.GetComponent<PlayingCard>());
         }
+    }
+
+    [PunRPC]
+    private void RPC_RemoveCard(int id)
+    {
+        PlayingCard cardToRemove = null;
+
+        foreach (PlayingCard card in playingCards)
+        {
+
+            if (card.photonView.ViewID == id)
+            {
+                cardToRemove = card;
+                break;
+            }
+        }
+
+        playingCards.Remove(cardToRemove);
     }
     #endregion
 }

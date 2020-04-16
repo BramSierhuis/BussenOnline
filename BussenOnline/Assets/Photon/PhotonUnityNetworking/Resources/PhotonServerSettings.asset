@@ -39,6 +39,7 @@ MonoBehaviour:
   - RPC_PopulateCardsList
   - RPC_PopulatePlayersList
   - RPC_AddDrink
+  - RPC_RemoveCard
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
