@@ -48,7 +48,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     #region References
     [SerializeField]
-    private GameObject round1Panel;
+    private GameObject round1Panel;    
+    [SerializeField]
+    private GameObject loadingPanel;    
+    [SerializeField]
+    private GameObject statusPanel;
     [SerializeField]
     private GameObject round2Panel;
     [SerializeField]
@@ -125,7 +129,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        StartCoroutine(CreateLocalPlayerList(1));
+        loadingPanel.SetActive(true);
+        round1Panel.SetActive(false);
+        statusPanel.SetActive(false);
+
+        StartCoroutine(CreateLocalPlayerList(3));
     }
     #endregion
 
@@ -287,6 +295,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             players[player.Index] = player;
         }
+
+        loadingPanel.SetActive(false);
+        round1Panel.SetActive(true);
+        statusPanel.SetActive(true);
 
         photonView.RPC("RPC_UpdateTurnUI", RpcTarget.All, players[0].Player);
         NextRound();
