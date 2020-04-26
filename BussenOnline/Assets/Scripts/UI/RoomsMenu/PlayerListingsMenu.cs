@@ -143,7 +143,7 @@ public class PlayerListingsMenu : MonoBehaviourPunCallbacks
 
             PhotonNetwork.CurrentRoom.IsOpen = false; //Not everyone can join
             PhotonNetwork.CurrentRoom.IsVisible = false; //Not everyone can see it in the room list
-            PhotonNetwork.LoadLevel(1);
+            PhotonNetwork.LoadLevel("GameScene");
         }
     }
 
